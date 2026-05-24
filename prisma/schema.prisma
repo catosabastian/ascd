@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+model ThreadRun {
+  id                  String    @id
+  createdAt           DateTime  @default(now())
+  videoTitle          String
+  marketFocus         String
+  platformStyle       String
+  mentionedBrand      String
+  chaosLevel          Int
+  memeDensity         Int
+  skepticismLevel     Int
+  softCtaStrength     Int
+  emotionalDrift      String
+  marketCycleMode     String
+  avgSentiment        Float     @default(0)
+  avgToxicity         Float     @default(0)
+  engagementScore     Float     @default(0)
+  controversyIndex    Float     @default(0)
+  personas            Persona[]
+  comments            Comment[]
+}
+
+model Persona {
+  id                  String    @id
+  runId               String
+  run                 ThreadRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  username            String
+  archetypeLabel      String
+  emotionalBehavior   String
+  grammarQuality      Int
+  slangDensity        Int
+  aggressionLevel     Int
+  emotionalStability  Int
+  backstory           String
+  avatarSeed          String
+  comments            Comment[]
+}
+
+model Comment {
+  id                  String    @id
+  runId               String
+  run                 ThreadRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  personaId           String
+  persona             Persona   @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  content             String
+  parentId            String?
+  timestampOffset     Int
+  likes               Int       @default(0)
+  dislikes            Int       @default(0)
+  sentiment           Float     @default(0)
+  toxicity            Float     @default(0)
+  orderIndex          Int
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  provider    String    // "gemini" | "openai" | "groq"
+  label       String
+  keyValue    String    // AES-256-CBC encrypted
+  isActive    Boolean   @default(true)
+  isSelected  Boolean   @default(false)
+  isExhausted Boolean   @default(false)
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+}
