@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
-import { prisma } from "./prisma";
+import { getPrisma } from "./prisma";
 import { decrypt } from "./crypto";
 
 export type ProviderName = "gemini" | "openai" | "groq" | "openrouter";
@@ -77,6 +77,7 @@ export interface LLMResult {
  */
 export async function getActiveProvider(): Promise<{ provider: ProviderName; apiKey: string } | null> {
   try {
+    const prisma = getPrisma();
     // Find the selected key
     const selectedKey = await prisma.apiKey.findFirst({
       where: { isSelected: true, isActive: true, isExhausted: false },
@@ -125,6 +126,7 @@ export async function getActiveProvider(): Promise<{ provider: ProviderName; api
  */
 export async function markKeyExhausted(provider: ProviderName): Promise<void> {
   try {
+    const prisma = getPrisma();
     await prisma.apiKey.updateMany({
       where: { provider, isSelected: true },
       data: { isExhausted: true, isSelected: false },
@@ -147,6 +149,7 @@ export async function callLLM(systemPrompt: string): Promise<LLMResult> {
 
   // Update lastUsedAt
   try {
+    const prisma = getPrisma();
     await prisma.apiKey.updateMany({
       where: { isSelected: true },
       data: { lastUsedAt: new Date() },

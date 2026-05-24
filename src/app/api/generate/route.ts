@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 import { generateThread, type ThreadConfig } from '@/lib/engine';
 
 export const dynamic = 'force-dynamic';
@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   console.log(">>> POST /api/generate hit!");
   try {
+    const prisma = getPrisma();
     const body: ThreadConfig = await request.json();
     console.log(">>> Body parsed:", JSON.stringify(body));
     const { videoTitle, marketFocus, platformStyle, mentionedBrand, chaosLevel, memeDensity, skepticismLevel, softCtaStrength, emotionalDrift, marketCycleMode } = body;

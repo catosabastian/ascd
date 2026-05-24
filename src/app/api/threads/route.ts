@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { getPrisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const prisma = getPrisma();
     const runs = await prisma.threadRun.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
@@ -36,6 +37,7 @@ export async function GET() {
 
 export async function DELETE() {
   try {
+    const prisma = getPrisma();
     await prisma.comment.deleteMany();
     await prisma.persona.deleteMany();
     await prisma.threadRun.deleteMany();

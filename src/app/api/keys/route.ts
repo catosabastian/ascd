@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { encrypt, decrypt, maskKey } from "@/lib/crypto";
 
 export const dynamic = 'force-dynamic';
@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 // GET — List all keys (masked)
 export async function GET() {
   try {
+    const prisma = getPrisma();
     const keys = await prisma.apiKey.findMany({
       orderBy: { createdAt: "asc" },
     });
@@ -36,6 +37,7 @@ export async function GET() {
 // POST — Add a new key
 export async function POST(request: Request) {
   try {
+    const prisma = getPrisma();
     const body = await request.json();
     const { provider, label, keyValue } = body;
 
@@ -81,6 +83,7 @@ export async function POST(request: Request) {
 // PATCH — Update a key (edit key value, toggle active, select, or reset exhaustion)
 export async function PATCH(request: Request) {
   try {
+    const prisma = getPrisma();
     const body = await request.json();
     const { id, keyValue, isActive, isSelected, resetExhaustion } = body;
 
@@ -138,6 +141,7 @@ export async function PATCH(request: Request) {
 // DELETE — Remove a key
 export async function DELETE(request: Request) {
   try {
+    const prisma = getPrisma();
     const body = await request.json();
     const { id } = body;
 

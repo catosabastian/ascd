@@ -4,17 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.75",
     "@google/generative-ai": "^0.24.1",
-    "@libsql/client": "^0.17.3",
     "@prisma/client": "^5.14.0",
     "ai": "^6.0.185",
-    "better-sqlite3": "^12.10.0",
     "framer-motion": "^12.39.0",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
