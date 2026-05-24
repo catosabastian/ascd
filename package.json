@@ -12,7 +12,6 @@
     "@ai-sdk/google": "^3.0.75",
     "@google/generative-ai": "^0.24.1",
     "@libsql/client": "^0.17.3",
-    "@next/swc-win32-x64-msvc": "^16.2.6",
     "@prisma/client": "^5.14.0",
     "ai": "^6.0.185",
     "better-sqlite3": "^12.10.0",
