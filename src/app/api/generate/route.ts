@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateThread, type ThreadConfig } from '@/lib/engine';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   console.log(">>> POST /api/generate hit!");
   try {

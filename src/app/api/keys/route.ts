@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { encrypt, decrypt, maskKey } from "@/lib/crypto";
 
+export const dynamic = 'force-dynamic';
+
 // GET — List all keys (masked)
 export async function GET() {
   try {
