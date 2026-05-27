@@ -19,6 +19,7 @@ export async function GET() {
         provider: k.provider,
         label: k.label,
         maskedKey: maskKey(raw),
+        selectedModel: k.selectedModel,
         isActive: k.isActive,
         isSelected: k.isSelected,
         isExhausted: k.isExhausted,
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
   try {
     const prisma = getPrisma();
     const body = await request.json();
-    const { provider, label, keyValue } = body;
+    const { provider, label, keyValue, selectedModel } = body;
 
     if (!provider || !keyValue) {
       return NextResponse.json({ error: "provider and keyValue are required" }, { status: 400 });
@@ -55,6 +56,7 @@ export async function POST(request: Request) {
         provider,
         label: label || `${provider} key`,
         keyValue: encrypted,
+        selectedModel,
         isSelected: existingCount === 0,
       },
     });
@@ -67,6 +69,7 @@ export async function POST(request: Request) {
         provider: key.provider,
         label: key.label,
         maskedKey: maskKey(raw),
+        selectedModel: key.selectedModel,
         isActive: key.isActive,
         isSelected: key.isSelected,
         isExhausted: key.isExhausted,
@@ -85,7 +88,7 @@ export async function PATCH(request: Request) {
   try {
     const prisma = getPrisma();
     const body = await request.json();
-    const { id, keyValue, isActive, isSelected, resetExhaustion } = body;
+    const { id, keyValue, isActive, isSelected, resetExhaustion, selectedModel } = body;
 
     if (!id) {
       return NextResponse.json({ error: "id is required" }, { status: 400 });
@@ -100,6 +103,10 @@ export async function PATCH(request: Request) {
 
     if (isActive !== undefined) {
       updateData.isActive = isActive;
+    }
+
+    if (selectedModel !== undefined) {
+      updateData.selectedModel = selectedModel;
     }
 
     if (resetExhaustion) {
@@ -125,6 +132,7 @@ export async function PATCH(request: Request) {
         provider: updated.provider,
         label: updated.label,
         maskedKey: maskKey(raw),
+        selectedModel: updated.selectedModel,
         isActive: updated.isActive,
         isSelected: updated.isSelected,
         isExhausted: updated.isExhausted,

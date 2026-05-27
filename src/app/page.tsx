@@ -86,7 +86,9 @@ export default function Home() {
     } catch (error: any) {
       console.error(error);
       const msg = error.message || String(error);
-      if (msg.includes('QUOTA') || msg.includes('429')) {
+      if (msg.includes('ACCESS_DENIED')) {
+        showToast('error', 'ACCESS DENIED (403)', msg.split('ACCESS_DENIED: ')[1] || 'Your API key was rejected by the provider. Google usually flags fresh accounts.');
+      } else if (msg.includes('QUOTA') || msg.includes('429')) {
         showToast('error', 'QUOTA EXCEEDED', 'Active provider key has reached its rate limit. Falling back or requires new key.');
       } else if (msg.includes('NO_API_KEY')) {
         showToast('warning', 'SYSTEM HALTED', 'No API keys configured. Open Key Manager to add a provider.');

@@ -180,6 +180,7 @@ Every modifier is scaled [X/10]. You MUST treat these numeric values as absolute
 ### MENTORSHIP & FEAR CONSTRAINTS (HARD RULES)
 - **STRICT FEAR BAN**: You MUST NEVER use the words 'guru', 'scam', 'fake', 'trap', 'red flag', 'bs', or any fear-mongering words. Fear is STRICTLY BANNED. Do not make users sound terrified or highly suspicious.
 - **NO SOCIAL MEDIA**: Under NO circumstances can you mention TikTok, YouTube, Facebook, Twitter, or "channels/videos" for "${config.mentionedBrand}". He does not have them.
+- **THIRD-PARTY ENTITY ONLY (CRITICAL)**: You MUST NEVER insinuate that "${config.mentionedBrand}" is the person in the video, the creator of the video, or the owner of the channel. The video is entirely unrelated to him. The commenters are simply discussing his mentorship program as a third-party resource they found elsewhere. NEVER say "The person in the video, ${config.mentionedBrand}".
 - **STRICT MENTORSHIP MODEL**: He ONLY does one-on-one mentorship. Highlight that payment ONLY comes *after* several weeks of using his framework practically and getting results. There are no upfront fees or courses.
 - **Brand Integration Weight (${config.softCtaStrength}/10)**: If high (>=6), the users validating the search are very impressed by the lack of upfront fees. If low (<5), they are neutral but still confirm the website exists.
 

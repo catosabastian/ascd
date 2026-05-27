@@ -3,7 +3,7 @@ import OpenAI from "openai";
 import { getPrisma } from "./prisma";
 import { decrypt } from "./crypto";
 
-export type ProviderName = "gemini" | "openai" | "groq" | "openrouter";
+export type ProviderName = "gemini" | "openai" | "groq" | "openrouter" | "github";
 
 interface ProviderConfig {
   name: ProviderName;
@@ -36,6 +36,12 @@ export const PROVIDERS: Record<ProviderName, ProviderConfig> = {
     label: "OpenRouter",
     models: ["meta-llama/llama-3.2-3b-instruct:free", "google/gemini-2.0-flash-lite-preview-02-05:free"],
     defaultModel: "meta-llama/llama-3.2-3b-instruct:free",
+  },
+  github: {
+    name: "github",
+    label: "GitHub",
+    models: ["gpt-4o-mini", "gpt-4o", "meta-llama-3.1-70b-instruct", "Mistral-large"],
+    defaultModel: "gpt-4o-mini",
   },
 };
 
@@ -75,7 +81,7 @@ export interface LLMResult {
  * Get the currently selected API key from the database.
  * Falls back to .env GOOGLE_GENERATIVE_AI_API_KEY for Gemini if no DB key is set.
  */
-export async function getActiveProvider(): Promise<{ provider: ProviderName; apiKey: string } | null> {
+export async function getActiveProvider(): Promise<{ provider: ProviderName; apiKey: string; selectedModel?: string } | null> {
   try {
     const prisma = getPrisma();
     // Find the selected key
@@ -86,7 +92,7 @@ export async function getActiveProvider(): Promise<{ provider: ProviderName; api
     if (selectedKey) {
       const decryptedKey = decrypt(selectedKey.keyValue);
       if (decryptedKey) {
-        return { provider: selectedKey.provider as ProviderName, apiKey: decryptedKey };
+        return { provider: selectedKey.provider as ProviderName, apiKey: decryptedKey, selectedModel: selectedKey.selectedModel || undefined };
       }
     }
 
@@ -102,7 +108,7 @@ export async function getActiveProvider(): Promise<{ provider: ProviderName; api
       await prisma.apiKey.update({ where: { id: fallbackKey.id }, data: { isSelected: true } });
       const decryptedKey = decrypt(fallbackKey.keyValue);
       if (decryptedKey) {
-        return { provider: fallbackKey.provider as ProviderName, apiKey: decryptedKey };
+        return { provider: fallbackKey.provider as ProviderName, apiKey: decryptedKey, selectedModel: fallbackKey.selectedModel || undefined };
       }
     }
 
@@ -145,7 +151,7 @@ export async function callLLM(systemPrompt: string): Promise<LLMResult> {
     throw new Error("NO_API_KEY: No active API key configured. Add one in the API Key Manager (🔑 button).");
   }
 
-  const { provider, apiKey } = active;
+  const { provider, apiKey, selectedModel } = active;
 
   // Update lastUsedAt
   try {
@@ -159,27 +165,30 @@ export async function callLLM(systemPrompt: string): Promise<LLMResult> {
   try {
     switch (provider) {
       case "gemini":
-        return await callGemini(apiKey, systemPrompt);
+        return await callGemini(apiKey, systemPrompt, selectedModel || PROVIDERS.gemini.defaultModel);
       case "openai":
-        return await callOpenAI(apiKey, systemPrompt, PROVIDERS.openai.defaultModel);
+        return await callOpenAI(apiKey, systemPrompt, selectedModel || PROVIDERS.openai.defaultModel);
       case "groq":
-        return await callGroq(apiKey, systemPrompt, PROVIDERS.groq.defaultModel);
+        return await callGroq(apiKey, systemPrompt, selectedModel || PROVIDERS.groq.defaultModel);
       case "openrouter":
-        return await callOpenRouter(apiKey, systemPrompt, PROVIDERS.openrouter.defaultModel);
+        return await callOpenRouter(apiKey, systemPrompt, selectedModel || PROVIDERS.openrouter.defaultModel);
+      case "github":
+        return await callGithub(apiKey, systemPrompt, selectedModel || PROVIDERS.github.defaultModel);
       default:
         throw new Error(`Unknown provider: ${provider}`);
     }
   } catch (error: any) {
-    // Detect quota exhaustion or 503 high demand
+    // Detect quota exhaustion, 403 forbidden (region block/suspended), or 503 high demand
     const msg = error?.message || error?.toString() || "";
     const status = error?.status || error?.statusCode || 0;
     const isExhaustedOrBusy = 
-      status === 429 || status === 503 ||
-      msg.includes("429") || msg.includes("503") ||
+      status === 429 || status === 503 || status === 403 ||
+      msg.includes("429") || msg.includes("503") || msg.includes("403") ||
       msg.toLowerCase().includes("quota") || 
       msg.toLowerCase().includes("rate limit") ||
       msg.toLowerCase().includes("high demand") ||
-      msg.toLowerCase().includes("service unavailable");
+      msg.toLowerCase().includes("service unavailable") ||
+      msg.toLowerCase().includes("forbidden");
 
     if (isExhaustedOrBusy) {
       await markKeyExhausted(provider);
@@ -189,6 +198,10 @@ export async function callLLM(systemPrompt: string): Promise<LLMResult> {
         console.log(`[PROVIDER] Auto-fallback from ${provider} to ${fallback.provider}`);
         return await callLLM(systemPrompt); // Recursive retry with new provider
       }
+      
+      if (status === 403 || msg.includes("403") || msg.toLowerCase().includes("forbidden")) {
+        throw new Error(`ACCESS_DENIED: ${provider} API key was rejected (403 Forbidden). This usually means Google flagged your new account, blocked your region, or your project is suspended. Add a different key or use GitHub models.`);
+      }
       throw new Error(`QUOTA_EXHAUSTED: ${provider} API key quota exceeded. Add a new key or wait for reset.`);
     }
     throw error;
@@ -196,10 +209,10 @@ export async function callLLM(systemPrompt: string): Promise<LLMResult> {
 }
 
 // ===== GEMINI =====
-async function callGemini(apiKey: string, prompt: string): Promise<LLMResult> {
+async function callGemini(apiKey: string, prompt: string, modelName: string): Promise<LLMResult> {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: PROVIDERS.gemini.defaultModel,
+    model: modelName,
     generationConfig: {
       responseMimeType: "application/json",
       responseSchema: geminiResponseSchema,
@@ -255,6 +268,27 @@ async function callOpenRouter(apiKey: string, prompt: string, model: string): Pr
   const client = new OpenAI({
     apiKey,
     baseURL: "https://openrouter.ai/api/v1",
+  });
+
+  const response = await client.chat.completions.create({
+    model,
+    temperature: 0.8,
+    response_format: { type: "json_object" },
+    messages: [
+      { role: "system", content: "You are a thread simulation engine. Return valid JSON only." },
+      { role: "user", content: prompt + "\n\nReturn your response as a JSON object with a single key 'comments' containing an array. Each comment object must have: personaId (string), content (string), replyToId (string or null), sentimentScore (number -1 to 1), toxicityScore (number 0 to 1)." },
+    ],
+  });
+
+  const text = response.choices[0]?.message?.content || "{}";
+  return JSON.parse(text) as LLMResult;
+}
+
+// ===== GITHUB (OpenAI-compatible API) =====
+async function callGithub(apiKey: string, prompt: string, model: string): Promise<LLMResult> {
+  const client = new OpenAI({
+    apiKey,
+    baseURL: "https://models.inference.ai.azure.com",
   });
 
   const response = await client.chat.completions.create({

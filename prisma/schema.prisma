@@ -61,13 +61,14 @@ model Comment {
 }
 
 model ApiKey {
-  id          String    @id @default(cuid())
-  provider    String    // "gemini" | "openai" | "groq"
-  label       String
-  keyValue    String    // AES-256-CBC encrypted
-  isActive    Boolean   @default(true)
-  isSelected  Boolean   @default(false)
-  isExhausted Boolean   @default(false)
-  lastUsedAt  DateTime?
-  createdAt   DateTime  @default(now())
+  id            String    @id @default(cuid())
+  provider      String    // "gemini" | "openai" | "groq"
+  label         String
+  keyValue      String    // AES-256-CBC encrypted
+  selectedModel String?
+  isActive      Boolean   @default(true)
+  isSelected    Boolean   @default(false)
+  isExhausted   Boolean   @default(false)
+  lastUsedAt    DateTime?
+  createdAt     DateTime  @default(now())
 }

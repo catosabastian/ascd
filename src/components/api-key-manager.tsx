@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { X, Key, Lock, Unlock, AlertTriangle, Check, Trash2, Plus, RefreshCw } from 'lucide-react';
+import { X, Key, Lock, Unlock, AlertTriangle, Check, Trash2, Plus, RefreshCw, ChevronDown, ChevronRight } from 'lucide-react';
+import { PROVIDERS } from '@/lib/provider';
 
 const PIN = '123456';
 
@@ -9,6 +10,7 @@ const PROVIDER_INFO: Record<string, { label: string; color: string; placeholder:
   openai: { label: 'OPENAI', color: 'var(--color-neon-green)', placeholder: 'sk-proj-...' },
   groq:   { label: 'GROQ',   color: 'var(--color-neon-cyan)',  placeholder: 'gsk_...' },
   openrouter: { label: 'OPENROUTER', color: 'var(--color-neon-magenta)', placeholder: 'sk-or-v1-...' },
+  github: { label: 'GITHUB', color: '#8b5cf6', placeholder: 'ghp_...' },
 };
 
 interface ApiKeyData {
@@ -16,6 +18,7 @@ interface ApiKeyData {
   provider: string;
   label: string;
   maskedKey: string;
+  selectedModel?: string;
   isActive: boolean;
   isSelected: boolean;
   isExhausted: boolean;
@@ -38,6 +41,17 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
   const [addingProvider, setAddingProvider] = useState<string | null>(null);
   const [newKeyValue, setNewKeyValue] = useState('');
   const [switchingId, setSwitchingId] = useState<string | null>(null);
+  const [collapsedProviders, setCollapsedProviders] = useState<Record<string, boolean>>({
+    gemini: false,
+    openai: true,
+    groq: true,
+    openrouter: true,
+    github: false,
+  });
+
+  const toggleCollapse = (prov: string) => {
+    setCollapsedProviders(prev => ({ ...prev, [prov]: !prev[prov] }));
+  };
 
   const fetchKeys = useCallback(async () => {
     try {
@@ -126,6 +140,19 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, resetExhaustion: true }),
+      });
+      await fetchKeys();
+    } catch {}
+  };
+
+  const handleModelChange = async (id: string, selectedModel: string) => {
+    try {
+      // Optimistic update
+      setKeys(keys => keys.map(k => k.id === id ? { ...k, selectedModel } : k));
+      await fetch('/api/keys', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, selectedModel }),
       });
       await fetchKeys();
     } catch {}
@@ -221,10 +248,15 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
             {/* Keys List by Provider */}
             {Object.entries(PROVIDER_INFO).map(([prov, info]) => {
               const provKeys = keys.filter(k => k.provider === prov);
+              const isCollapsed = collapsedProviders[prov];
               return (
                 <div key={prov} className="border border-[var(--color-border-main)] bg-[var(--color-bg-base)]">
-                  <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--color-border-dim)] bg-[var(--color-bg-header)]">
+                  <div 
+                    className="flex items-center justify-between px-3 py-2 border-b border-[var(--color-border-dim)] bg-[var(--color-bg-header)] cursor-pointer hover:bg-[var(--color-bg-hover)]"
+                    onClick={() => toggleCollapse(prov)}
+                  >
                     <div className="flex items-center gap-2">
+                      {isCollapsed ? <ChevronRight size={12} className="text-[var(--color-text-dim)]" /> : <ChevronDown size={12} className="text-[var(--color-text-dim)]" />}
                       <div className="w-2 h-2 rounded-full" style={{ background: info.color }} />
                       <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: info.color }}>
                         {info.label}
@@ -234,14 +266,15 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
                       </span>
                     </div>
                     <button
-                      onClick={() => { setAddingProvider(prov); setNewKeyValue(''); }}
+                      onClick={(e) => { e.stopPropagation(); setCollapsedProviders(prev => ({ ...prev, [prov]: false })); setAddingProvider(prov); setNewKeyValue(''); }}
                       className="btn-term-ghost text-[9px] flex items-center gap-1 hover:term-text-green"
                     >
                       <Plus size={10} /> Add
                     </button>
                   </div>
 
-                  <div className="divide-y divide-[var(--color-border-dim)]">
+                  {!isCollapsed && (
+                    <div className="divide-y divide-[var(--color-border-dim)]">
                     {provKeys.map(k => (
                       <div key={k.id} className={`px-3 py-2.5 transition-colors ${k.isSelected ? 'bg-[#0a1a0a]' : ''}`}>
                         <div className="flex items-center justify-between mb-1">
@@ -299,13 +332,27 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
                             </button>
                           </div>
                         ) : (
-                          <div className="text-[11px] font-mono text-[var(--color-text-dim)] tracking-wider">
-                            {k.maskedKey}
+                          <div className="flex flex-col gap-1">
+                            <div className="text-[11px] font-mono text-[var(--color-text-dim)] tracking-wider">
+                              {k.maskedKey}
+                            </div>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-[9px] text-[var(--color-text-dark)] uppercase">Model:</span>
+                              <select 
+                                value={k.selectedModel || PROVIDERS[prov as keyof typeof PROVIDERS]?.defaultModel}
+                                onChange={(e) => handleModelChange(k.id, e.target.value)}
+                                className="bg-[var(--color-bg-panel)] border border-[var(--color-border-dim)] text-[9px] text-[var(--color-text-main)] py-0.5 px-1 outline-none"
+                              >
+                                {PROVIDERS[prov as keyof typeof PROVIDERS]?.models.map(m => (
+                                  <option key={m} value={m}>{m}</option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
                         )}
 
                         {k.lastUsedAt && (
-                          <div className="text-[8px] text-[var(--color-text-dark)] mt-1 font-mono">
+                          <div className="text-[8px] text-[var(--color-text-dark)] mt-2 font-mono">
                             Last used: {new Date(k.lastUsedAt).toLocaleString()}
                           </div>
                         )}
@@ -341,6 +388,7 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
                       </div>
                     )}
                   </div>
+                  )}
                 </div>
               );
             })}
