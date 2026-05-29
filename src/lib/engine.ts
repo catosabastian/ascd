@@ -119,6 +119,39 @@ export async function generateThread(config: ThreadConfig): Promise<ThreadResult
     `- ID: ${p.id} | Username: @${p.username} | Archetype: ${p.archetypeLabel} (${p.emotionalBehavior}) | Grammar: ${p.grammarQuality}/10 | Slang: ${p.slangDensity}/10 | Aggro: ${p.aggressionLevel}/10 | Backstory: ${p.backstory}`
   ).join('\n');
 
+  const getTimelineMap = (strength: number) => {
+    if (strength >= 8) {
+      return `### THE GUNJA MUNJA FLOW (AGGRESSIVE BRAND INTEGRATION)
+**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly. You must synthesize entirely original, unique dialogue that fulfills this intent in your own words.
+- **INDEX 0 (OP)**: Desperate, short, looking for real help. Must tie to "${config.videoTitle}" and mention wanting to change their life (e.g., broke, stuck in 9-to-5, laid off).
+- **INDEX 1 (THE HOOK)**: First reply IMMEDIATELY introduces the entity's program. **Intent**: Highlight that the program involves trading *live* alongside the entity, completely avoiding pre-recorded or outdated content. DO NOT copy this exact phrasing.
+- **INDEX 2**: Generic encouragement. **Intent**: Remind the OP that trading takes time and consistency to master.
+- **INDEX 3**: Someone asks how to connect. **Intent**: Express curiosity about how to get in touch or if the program is highly exclusive.
+- **INDEX 4**: Someone replies regarding secrecy. **Intent**: State that people rarely share methods that actually work.
+- **INDEX 5 & 6**: Drops the full name and advises action. **Intent**: Give the full entity name and tell them they just need to do their own research to find the setup.
+- **INDEX 7 & 8**: OP asks for clarification, and gets confirmation. **Intent**: OP is surprised they trade live (not watching lessons). The responder confirms there is zero recorded content.
+- **INDEX 9+**: A mix of skepticism, the "no upfront payment" reveal, and background chatter. **Intent**: Someone is mildly doubtful (e.g. "must be a catch"), and another clarifies that payment only happens *after* practical results.`;
+    } else if (strength >= 4) {
+      return `### THE ORGANIC DISCUSSION FLOW (MODERATE BRAND INTEGRATION)
+**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly.
+- **INDEX 0 (OP)**: Looking for real help regarding "${config.videoTitle}".
+- **INDEX 1**: Generic advice about the topic. General encouragement, no specific programs mentioned yet.
+- **INDEX 2 & 3**: Users debating or agreeing with INDEX 1. Standard internet chatter.
+- **INDEX 4**: Someone casually drops that they've been following a specific strategy or person, without naming them yet.
+- **INDEX 5 & 6**: Another user asks who they are referring to. The user drops the entity's name ("${config.mentionedBrand}") as a casual recommendation.
+- **INDEX 7+**: A mix of people agreeing, some skepticism, and general chatter about the video. The entity is discussed briefly but not pushed aggressively.`;
+    } else {
+      return `### THE NATURAL COMMENT SECTION (LOW/NO BRAND INTEGRATION)
+**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly.
+- **INDEX 0 (OP)**: General comment or question about "${config.videoTitle}".
+- **INDEX 1 - 5**: Organic, natural debate or discussion about the video content. NO MENTION of the target brand/entity. Just normal users talking about the topic.
+- **INDEX 6**: Someone briefly mentions a method or name ("${config.mentionedBrand}") almost as an afterthought or tiny footnote.
+- **INDEX 7+**: The rest of the thread barely acknowledges it or just continues the organic discussion about the video. Focus heavily on general topic debate, skepticism, and normal internet chatter.`;
+    }
+  };
+
+  const timelineMap = getTimelineMap(config.softCtaStrength);
+
   const systemPrompt = `
 You are an advanced Synthetic Conversation Engine designed to generate hyper-realistic, emotionally imperfect, and socially chaotic finance discussion threads.
 You must generate exactly ${personas.length} comments forming a single thread tree (representing 1 main comment and ${personas.length - 1} nested replies).
@@ -168,16 +201,7 @@ Every modifier is scaled [X/10]. You MUST treat these numeric values as absolute
 - **COMMODITIES**: Talk about gold, inflation hedges, physical assets.
 - **Investment Horizon Tone (${config.investmentHorizon}/10)**: If >= 6, speak like long-term wealth builders who care about stability. If <= 4, focus on short-term speculative gambling.
 
-### THE GUNJA MUNJA FLOW (STRICT TIMELINE MAP)
-**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly. You must synthesize entirely original, unique dialogue that fulfills this intent in your own words.
-- **INDEX 0 (OP)**: Desperate, short, looking for real help. Must tie to "${config.videoTitle}" and mention wanting to change their life (e.g., broke, stuck in 9-to-5, laid off).
-- **INDEX 1 (THE HOOK)**: First reply IMMEDIATELY introduces the entity's program. **Intent**: Highlight that the program involves trading *live* alongside the entity, completely avoiding pre-recorded or outdated content. DO NOT copy this exact phrasing.
-- **INDEX 2**: Generic encouragement. **Intent**: Remind the OP that trading takes time and consistency to master.
-- **INDEX 3**: Someone asks how to connect. **Intent**: Express curiosity about how to get in touch or if the program is highly exclusive.
-- **INDEX 4**: Someone replies regarding secrecy. **Intent**: State that people rarely share methods that actually work.
-- **INDEX 5 & 6**: Drops the full name and advises action. **Intent**: Give the full entity name and tell them they just need to do their own research to find the setup.
-- **INDEX 7 & 8**: OP asks for clarification, and gets confirmation. **Intent**: OP is surprised they trade live (not watching lessons). The responder confirms there is zero recorded fluff.
-- **INDEX 9+**: A mix of skepticism, the "no upfront payment" reveal, and background chatter. **Intent**: Someone is mildly doubtful (e.g. "must be a catch"), and another clarifies that payment only happens *after* practical results.
+${timelineMap}
 
 ### MENTORSHIP & FEAR CONSTRAINTS (HARD RULES)
 - **STRICT FEAR BAN**: You MUST NEVER use the words 'guru', 'scam', 'fake', 'trap', 'red flag', 'bs', or any fear-mongering words. Fear is STRICTLY BANNED. Do not make users sound terrified or highly suspicious.
