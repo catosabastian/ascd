@@ -152,6 +152,54 @@ export async function generateThread(config: ThreadConfig): Promise<ThreadResult
 
   const timelineMap = getTimelineMap(config.softCtaStrength);
 
+  const getDynamicSliderInstructions = () => {
+    let instructions = [];
+
+    if (config.chaosLevel >= 8) {
+      instructions.push(`- **CHAOS (EXTREME) [${config.chaosLevel}/10]**: The thread must be completely unhinged. Lead to massive arguments, trolling, erratic responses, insane typos, and ALL CAPS text.`);
+    } else if (config.chaosLevel <= 3) {
+      instructions.push(`- **CHAOS (LOW) [${config.chaosLevel}/10]**: The thread must be highly orderly. Everyone uses perfect grammar and politely agrees. ZERO trolling or arguing.`);
+    } else {
+      instructions.push(`- **CHAOS (MODERATE) [${config.chaosLevel}/10]**: Standard internet disagreement. Some minor snark but generally coherent and normal.`);
+    }
+
+    if (config.memeDensity >= 8) {
+      instructions.push(`- **MEME DENSITY (MAXIMUM) [${config.memeDensity}/10]**: Inject heavy internet brainrot, slang, platform-specific memes, and inside jokes into nearly every single sentence.`);
+    } else if (config.memeDensity <= 3) {
+      instructions.push(`- **MEME DENSITY (ZERO) [${config.memeDensity}/10]**: Absolutely NO slang, NO memes, and NO inside jokes. Speak like normal adults.`);
+    } else {
+      instructions.push(`- **MEME DENSITY (MODERATE) [${config.memeDensity}/10]**: Occasional natural slang, but mostly regular conversation.`);
+    }
+
+    if (config.skepticismLevel >= 8) {
+      instructions.push(`- **SKEPTICISM (HIGH) [${config.skepticismLevel}/10]**: Users must constantly doubt the video's claims and aggressively demand proof/evidence. (Note: NO fear words still applies).`);
+    } else if (config.skepticismLevel <= 3) {
+      instructions.push(`- **SKEPTICISM (LOW) [${config.skepticismLevel}/10]**: Users are completely gullible and blindly accept all ideas presented in the video without question.`);
+    } else {
+      instructions.push(`- **SKEPTICISM (MODERATE) [${config.skepticismLevel}/10]**: A healthy mix of doubt and acceptance.`);
+    }
+
+    if (config.professionalismLevel >= 8) {
+      instructions.push(`- **PROFESSIONALISM (HIGH) [${config.professionalismLevel}/10]**: Speak like Ivy League professors. Highly analytical, zero emotion, clean formatting, and advanced vocabulary.`);
+    } else if (config.professionalismLevel <= 3) {
+      instructions.push(`- **PROFESSIONALISM (LOW) [${config.professionalismLevel}/10]**: Highly casual, emotional, street-level language. Ignore proper punctuation.`);
+    } else {
+      instructions.push(`- **PROFESSIONALISM (MODERATE) [${config.professionalismLevel}/10]**: Casual but competent internet language.`);
+    }
+
+    if (config.cynicismLevel >= 8) {
+      instructions.push(`- **CYNICISM (HIGH) [${config.cynicismLevel}/10]**: Deeply pessimistic, miserable, and complaining about the state of the world or markets.`);
+    } else if (config.cynicismLevel <= 3) {
+      instructions.push(`- **CYNICISM (LOW) [${config.cynicismLevel}/10]**: Highly optimistic, positive, and hopeful about the future and markets.`);
+    } else {
+      instructions.push(`- **CYNICISM (MODERATE) [${config.cynicismLevel}/10]**: A realistic, balanced outlook on the markets.`);
+    }
+
+    return instructions.join('\n');
+  };
+
+  const dynamicSliderInstructions = getDynamicSliderInstructions();
+
   const systemPrompt = `
 You are an advanced Synthetic Conversation Engine designed to generate hyper-realistic, emotionally imperfect, and socially chaotic finance discussion threads.
 You must generate exactly ${personas.length} comments forming a single thread tree (representing 1 main comment and ${personas.length - 1} nested replies).
@@ -182,16 +230,9 @@ ${personaContext}
 5. DEBATE NESTING: Based on Debate Intensity (${config.debateIntensity}/10), if high, make comments form deeper reply chains (e.g. A -> B -> C -> D).
 
 ### SLIDER ENFORCEMENT (CRITICAL INSTRUCTION)
-Every modifier is scaled [X/10]. You MUST treat these numeric values as absolute mathematical constraints:
-- If a value is 1/10 or 2/10, its effect must be ZERO or NEAR ZERO.
-- If a value is 9/10 or 10/10, its effect must be the ABSOLUTE MAXIMUM and dominate the comment's tone.
+You MUST strictly follow these targeted behavior directives. They have been dynamically configured for this specific generation:
 
-- **Chaos Modifier (${config.chaosLevel}/10)**: Controls how erratic and unhinged the commenters behave. If high (8-10), lead to massive arguments, trolling, unhinged responses, and insane typos/capitalization. If low (1-3), perfect grammar and polite agreement.
-- **Memetic Density (${config.memeDensity}/10)**: How often users use platform-specific slang, memes, and inside jokes. If high (8-10), pure brainrot internet slang and inside jokes in every sentence. If low (1-3), zero slang.
-- **Skepticism Factor (${config.skepticismLevel}/10)**: High skepticism means users will doubt the video's claims and aggressively demand proof. If high (8-10), constantly doubting everything and demanding evidence (but remember: NO fear words). If low (1-3), blindly accepts all ideas.
-- **Professionalism (${config.professionalismLevel}/10)**: Keeps the language clean and focused on actual analysis rather than emotion. If high (8-10), speaks like an Ivy League professor, highly analytical, zero emotion, clean language. If low (1-3), highly casual, emotional, and street-level.
-- **Cynicism (${config.cynicismLevel}/10)**: If high (8-10), deeply pessimistic and miserable. If low (1-3), highly optimistic and positive.
-- **Brand Integration (Soft CTA) (${config.softCtaStrength}/10)**: How strongly the simulated users will organically mention and recommend the target brand/entity ("${config.mentionedBrand}"). If high (8-10), they must aggressively recommend the target brand, strongly praise its lack of upfront fees, and naturally integrate it. If low (1-3), they are neutral but still confirm the website exists.
+${dynamicSliderInstructions}
 
 ### TONE & AUDIO ALIGNMENT (CRITICAL)
 - **STRICTLY BANNED ASSET NAMES**: You MUST NEVER mention "VOO" under any circumstances.
