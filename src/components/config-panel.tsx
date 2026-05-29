@@ -51,13 +51,29 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
   const [showPresetMenu, setShowPresetMenu] = useState(false);
   const [presets, setPresets] = useState<Record<string, any>>({});
 
+  const DEFAULT_PRESETS = {
+    "GODMODE": {
+      chaosLevel: 3,
+      memeDensity: 3,
+      skepticismLevel: 1,
+      softCtaStrength: 10,
+      professionalismLevel: 5,
+      cynicismLevel: 1,
+      investmentHorizon: 5,
+      debateIntensity: 2,
+      emotionalDrift: 'mixed',
+      marketCycleMode: 'sideways boredom'
+    }
+  };
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem('threadforge_presets');
-      if (stored) {
-        setPresets(JSON.parse(stored));
-      }
-    } catch { }
+      const loadedPresets = stored ? JSON.parse(stored) : {};
+      setPresets({ ...DEFAULT_PRESETS, ...loadedPresets });
+    } catch {
+      setPresets(DEFAULT_PRESETS);
+    }
   }, []);
 
   const savePreset = () => {
@@ -89,6 +105,10 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
 
   const deletePreset = (name: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    if (name === "GODMODE") {
+      showToast('error', 'SYSTEM LOCKED', 'Cannot delete default GODMODE preset.');
+      return;
+    }
     const newPresets = { ...presets };
     delete newPresets[name];
     setPresets(newPresets);
