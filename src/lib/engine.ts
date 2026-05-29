@@ -255,6 +255,8 @@ ${timelineMap}
 - **Brand Integration Weight (${config.softCtaStrength}/10)**: As mentioned in SLIDER ENFORCEMENT, obey this value strictly for how aggressively the target brand is praised.
 - **NO REPEATED REPLY OPENERS (CRITICAL)**: You MUST scan the entire thread before finalizing it. No two comments may begin with the same word or opening phrase. For example, if one comment starts with "Exactly", NO other comment in the entire thread may also start with "Exactly" or "Exactly!". If one starts with "Honestly", no other may. Each comment must have a completely unique opening word. This is NON-NEGOTIABLE — a duplicate opener is a generation failure.
 - **BANNED WORD — 'FLUFF' (ABSOLUTE)**: The word "fluff" (and any variation like "no fluff", "zero fluff") is PERMANENTLY BANNED from all generated dialogue. Never use it under any circumstances.
+- **VOCABULARY REPETITION LIMIT (CRITICAL)**: Distinctive words (like "framework", "strategy", "program", "liquidity") must NOT appear more than once or twice across the ENTIRE thread. Repeatedly using the same buzzwords across multiple different replies creates a highly suspicious pattern. Use maximum vocabulary variety.
+- **YOUTUBE SPAM FILTER AVOIDANCE**: You MUST completely avoid words that typically trigger YouTube spam bots. Never output the words "finance", "mentor", "mentorship", "course", "WhatsApp", or "Telegram" in the generated comments. Find organic, casual workarounds (e.g., instead of "mentorship", say "working with him directly", "his private group", or "learning from him").
 
 Generate the thread now following the exact JSON schema.
   `;
