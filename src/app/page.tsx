@@ -147,58 +147,60 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col p-4 gap-4 bg-[var(--color-bg-base)] text-[var(--color-text-main)] font-sans">
+    <div className="h-screen flex flex-col p-2 md:p-4 gap-4 bg-[var(--color-bg-base)] text-[var(--color-text-main)] font-sans overflow-hidden">
       <ToastContainer />
       <ApiKeyManager isOpen={isKeyManagerOpen} onClose={() => setIsKeyManagerOpen(false)} />
       <HowToUseModal isOpen={isHowToUseOpen} onClose={() => setIsHowToUseOpen(false)} />
 
       {/* Top Header */}
-      <header className="term-panel flex items-center justify-between p-3 px-5 flex-shrink-0 !border-b !border-b-[var(--color-primary)]">
-        <div className="flex items-center gap-3">
-          <Terminal size={18} className="text-[var(--color-primary)]" />
-          <h1 className="text-[15px] font-bold uppercase tracking-widest text-white">ThreadForge <span className="text-[var(--color-text-dim)] font-normal ml-1">v2.0</span></h1>
-          <span className="text-[10px] bg-[rgba(99,102,241,0.2)] text-[var(--color-primary)] px-2 py-0.5 rounded-full font-bold uppercase border border-[rgba(99,102,241,0.3)] shadow-[0_0_10px_rgba(99,102,241,0.2)]">System Active</span>
+      <header className="term-panel flex flex-col md:flex-row items-center justify-between p-3 md:px-5 flex-shrink-0 !border-b !border-b-[var(--color-primary)] gap-3 md:gap-0">
+        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+          <div className="flex items-center gap-2">
+            <Terminal size={18} className="text-[var(--color-primary)]" />
+            <h1 className="text-[14px] md:text-[15px] font-bold uppercase tracking-widest text-white">ThreadForge <span className="text-[var(--color-text-dim)] font-normal ml-1">v2.0</span></h1>
+          </div>
+          <span className="text-[9px] md:text-[10px] bg-[rgba(99,102,241,0.2)] text-[var(--color-primary)] px-2 py-0.5 rounded-full font-bold uppercase border border-[rgba(99,102,241,0.3)] shadow-[0_0_10px_rgba(99,102,241,0.2)]">System Active</span>
         </div>
-        <div className="flex items-center gap-5 text-[11px] uppercase font-sans text-[var(--color-text-dim)] font-medium">
-          <span className="flex items-center gap-1.5"><Database size={14} /> Database Connected</span>
-          <span className="flex items-center gap-1.5 text-[var(--color-neon-green)]"><Activity size={14} /> Core online</span>
+        <div className="flex items-center gap-2 md:gap-5 text-[10px] md:text-[11px] uppercase font-sans text-[var(--color-text-dim)] font-medium flex-wrap justify-center w-full md:w-auto">
+          <span className="hidden sm:flex items-center gap-1.5"><Database size={14} /> DB Connected</span>
+          <span className="hidden sm:flex items-center gap-1.5 text-[var(--color-neon-green)]"><Activity size={14} /> Core online</span>
           <button 
             onClick={() => setIsHowToUseOpen(true)}
-            className="btn-term-ghost flex items-center gap-1.5 hover:text-[var(--color-primary)] px-3 py-1.5 border border-[var(--color-border-main)] hover:border-[var(--color-primary)] transition-all bg-[rgba(255,255,255,0.02)]"
+            className="btn-term-ghost flex items-center gap-1.5 hover:text-[var(--color-primary)] px-2 md:px-3 py-1.5 border border-[var(--color-border-main)] hover:border-[var(--color-primary)] transition-all bg-[rgba(255,255,255,0.02)]"
             title="How to Use Guide"
           >
             <Info size={12} /> Help
           </button>
           <button 
             onClick={() => setIsKeyManagerOpen(true)}
-            className="btn-term-ghost flex items-center gap-1.5 hover:text-[var(--color-neon-amber)] px-3 py-1.5 border border-[var(--color-border-main)] hover:border-[var(--color-neon-amber)] transition-all bg-[rgba(255,255,255,0.02)]"
+            className="btn-term-ghost flex items-center gap-1.5 hover:text-[var(--color-neon-amber)] px-2 md:px-3 py-1.5 border border-[var(--color-border-main)] hover:border-[var(--color-neon-amber)] transition-all bg-[rgba(255,255,255,0.02)]"
             title="API Key Manager"
           >
             <Key size={12} /> Keys
           </button>
           {comments.length > 0 && (
-            <button onClick={handleExport} className="btn-term-ghost flex items-center gap-1.5 hover:text-[var(--color-neon-cyan)] border border-[var(--color-border-main)] hover:border-[var(--color-neon-cyan)] px-3 py-1.5 transition-all bg-[rgba(255,255,255,0.02)]">
-              <Download size={12} /> Export Log
+            <button onClick={handleExport} className="btn-term-ghost flex items-center gap-1.5 hover:text-[var(--color-neon-cyan)] border border-[var(--color-border-main)] hover:border-[var(--color-neon-cyan)] px-2 md:px-3 py-1.5 transition-all bg-[rgba(255,255,255,0.02)]">
+              <Download size={12} /> Export
             </button>
           )}
         </div>
       </header>
 
       {/* Main Grid */}
-      <div className="flex-1 flex gap-4 min-h-0 relative">
+      <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-0 relative overflow-hidden">
         
         {/* Left Col: Config & History */}
         <div 
-          className="flex flex-col gap-4 flex-shrink-0 h-full"
-          style={{ width: `${leftWidth}px` }}
+          className="flex flex-col gap-4 flex-shrink-0 w-full lg:w-[var(--left-width)] h-[45vh] lg:h-full transition-all duration-200"
+          style={{ '--left-width': `${leftWidth}px` } as any}
         >
-          <div className="term-panel flex-1 flex flex-col overflow-hidden relative shadow-lg">
+          <div className="term-panel flex-1 flex flex-col overflow-hidden relative shadow-lg min-h-0">
             <div className="absolute right-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-[var(--color-primary)] to-transparent opacity-30 pointer-events-none" />
             <div className="term-header"><Layers size={14} className="text-[var(--color-primary)]" /> Parameters</div>
             <div className="flex-1 overflow-y-auto custom-scrollbar"><ConfigPanel onGenerate={handleGenerate} isGenerating={isGenerating} /></div>
           </div>
           
-          <div className={`term-panel flex flex-col overflow-hidden transition-all duration-300 shadow-lg ${logsExpanded ? 'h-1/3' : 'h-[36px]'}`}>
+          <div className={`term-panel flex flex-col overflow-hidden transition-all duration-300 shadow-lg ${logsExpanded ? 'flex-1 lg:h-1/3' : 'h-[36px] flex-none'}`}>
             <div 
               className="term-header justify-between cursor-pointer hover:bg-[rgba(255,255,255,0.05)] transition-colors !py-2"
               onClick={() => setLogsExpanded(!logsExpanded)}
@@ -219,31 +221,34 @@ export default function Home() {
 
         {/* Drag Handle */}
         <div 
-          className={`drag-handle flex-shrink-0 ${isDragging ? 'bg-[var(--color-primary)]' : ''}`}
+          className={`drag-handle flex-shrink-0 hidden lg:block ${isDragging ? 'bg-[var(--color-primary)]' : ''}`}
           onMouseDown={handleMouseDown}
         />
 
         {/* Center/Right Col: Output */}
-        <div className="flex-1 term-panel flex flex-col min-w-0 shadow-xl relative overflow-hidden">
+        <div className="flex-1 term-panel flex flex-col min-w-0 shadow-xl relative overflow-hidden h-[50vh] lg:h-auto">
           <div className="absolute left-0 top-0 right-0 h-[1px] bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-neon-cyan)] opacity-50 pointer-events-none" />
           
-          <div className="flex items-center border-b border-[var(--color-border-dim)] bg-[rgba(20,22,34,0.5)] px-2 pt-2">
+          <div className="flex items-center border-b border-[var(--color-border-dim)] bg-[rgba(20,22,34,0.5)] px-2 pt-2 overflow-x-auto custom-scrollbar whitespace-nowrap">
             <button onClick={() => setTab('thread')} className={`tab-btn flex items-center gap-2 ${tab === 'thread' ? 'active' : ''}`}>
-              <GitBranch size={14} /> Intercept Feed
+              <GitBranch size={14} /> Feed
             </button>
             <button onClick={() => setTab('personas')} className={`tab-btn flex items-center gap-2 ${tab === 'personas' ? 'active' : ''}`}>
-              <Users size={14} /> Active Agents
+              <Users size={14} /> Agents
             </button>
             <button onClick={() => setTab('analytics')} className={`tab-btn flex items-center gap-2 ${tab === 'analytics' ? 'active' : ''}`}>
               <Activity size={14} /> Telemetry
             </button>
             
             {isGenerating ? (
-              <span className="ml-auto mr-4 text-[11px] text-[var(--color-neon-amber)] uppercase flex items-center gap-2 font-medium bg-[rgba(245,158,11,0.1)] px-3 py-1 rounded-full">
+              <span className="ml-auto mr-2 md:mr-4 text-[10px] md:text-[11px] text-[var(--color-neon-amber)] uppercase flex items-center gap-1.5 font-medium bg-[rgba(245,158,11,0.1)] px-2 py-1 rounded-full whitespace-nowrap">
                 <RefreshCw size={12} className="animate-spin" /> 
-                {progressStep === 1 && '[1/3] Assembling Personas...'}
-                {progressStep === 2 && '[2/3] Executing LLM Pipeline...'}
-                {progressStep === 3 && '[3/3] Saving to Database...'}
+                <span className="hidden sm:inline">
+                  {progressStep === 1 && '[1/3] Assembling Personas...'}
+                  {progressStep === 2 && '[2/3] Executing LLM Pipeline...'}
+                  {progressStep === 3 && '[3/3] Saving to Database...'}
+                </span>
+                <span className="sm:hidden">Gen...</span>
               </span>
             ) : comments.length > 0 ? (
               <button
@@ -253,14 +258,14 @@ export default function Home() {
                   setMetrics(null);
                   setActiveRunId(null);
                 }}
-                className="btn-term-ghost ml-auto mr-4 px-3 py-1.5 text-[10px] hover:text-[var(--color-neon-red)] border border-[var(--color-border-main)] hover:border-[var(--color-neon-red)] transition-all uppercase rounded-md shadow-sm"
+                className="btn-term-ghost ml-auto mr-2 md:mr-4 px-2 md:px-3 py-1 md:py-1.5 text-[9px] md:text-[10px] hover:text-[var(--color-neon-red)] border border-[var(--color-border-main)] hover:border-[var(--color-neon-red)] transition-all uppercase rounded-md shadow-sm whitespace-nowrap"
               >
-                Clear Current Feed
+                Clear
               </button>
             ) : null}
           </div>
           
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <div className="flex-1 overflow-y-auto custom-scrollbar relative">
             {tab === 'thread' && <ThreadViewer comments={comments} personas={personas} platform={platform} />}
             {tab === 'personas' && <PersonaPanel personas={personas} comments={comments} />}
             {tab === 'analytics' && <AnalyticsPanel comments={comments} personas={personas} metrics={metrics} />}
