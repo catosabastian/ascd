@@ -120,33 +120,34 @@ export async function generateThread(config: ThreadConfig): Promise<ThreadResult
   ).join('\n');
 
   const getTimelineMap = (strength: number) => {
+    const baseDirectives = `**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly.
+- **INDEX 0 (OP)**: Desperate, looking for real help. **CRITICAL**: Do NOT quote the video title directly or try to forcefully inject the video title. Subtly reference the overarching topic in a natural way. Mention wanting to change their life (e.g., broke, laid off).
+- **INDEX 1 (THE HOOK)**: First reply IMMEDIATELY introduces the entity's program. **Intent**: Highlight that they trade *live* alongside the entity. DO NOT copy this exact phrasing.`;
+
     if (strength >= 8) {
       return `### THE GUNJA MUNJA FLOW (AGGRESSIVE BRAND INTEGRATION)
-**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly. You must synthesize entirely original, unique dialogue that fulfills this intent in your own words.
-- **INDEX 0 (OP)**: Desperate, short, looking for real help. Must tie to "${config.videoTitle}" and mention wanting to change their life (e.g., broke, stuck in 9-to-5, laid off).
-- **INDEX 1 (THE HOOK)**: First reply IMMEDIATELY introduces the entity's program. **Intent**: Highlight that the program involves trading *live* alongside the entity, completely avoiding pre-recorded or outdated content. DO NOT copy this exact phrasing.
-- **INDEX 2**: Generic encouragement. **Intent**: Remind the OP that trading takes time and consistency to master.
-- **INDEX 3**: Someone asks how to connect. **Intent**: Express curiosity about how to get in touch or if the program is highly exclusive.
-- **INDEX 4**: Someone replies regarding secrecy. **Intent**: State that people rarely share methods that actually work.
-- **INDEX 5 & 6**: Drops the full name and advises action. **Intent**: Give the full entity name and tell them they just need to do their own research to find the setup.
-- **INDEX 7 & 8**: OP asks for clarification, and gets confirmation. **Intent**: OP is surprised they trade live (not watching lessons). The responder confirms there is zero recorded content.
-- **INDEX 9+**: A mix of skepticism, the "no upfront payment" reveal, and background chatter. **Intent**: Someone is mildly doubtful (e.g. "must be a catch"), and another clarifies that payment only happens *after* practical results.`;
+${baseDirectives}
+- **INDEX 2**: Generic encouragement. Remind the OP that trading takes time and consistency.
+- **INDEX 3**: Someone asks how to connect or if the program is exclusive.
+- **INDEX 4**: Someone replies regarding secrecy (people rarely share methods that work).
+- **INDEX 5 & 6**: Drops the full entity name ("${config.mentionedBrand}") and advises action. Tell them to do their own research.
+- **INDEX 7 & 8**: OP asks for clarification, gets confirmation that there is zero recorded content.
+- **INDEX 9+**: A mix of skepticism, the "no upfront payment" reveal, and background chatter. Heavily push the entity.`;
     } else if (strength >= 4) {
       return `### THE ORGANIC DISCUSSION FLOW (MODERATE BRAND INTEGRATION)
-**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly.
-- **INDEX 0 (OP)**: Looking for real help regarding "${config.videoTitle}".
-- **INDEX 1**: Generic advice about the topic. General encouragement, no specific programs mentioned yet.
+${baseDirectives}
 - **INDEX 2 & 3**: Users debating or agreeing with INDEX 1. Standard internet chatter.
-- **INDEX 4**: Someone casually drops that they've been following a specific strategy or person, without naming them yet.
-- **INDEX 5 & 6**: Another user asks who they are referring to. The user drops the entity's name ("${config.mentionedBrand}") as a casual recommendation.
+- **INDEX 4**: Someone casually drops that they've been following a specific strategy.
+- **INDEX 5**: Another user asks who they are referring to. 
+- **INDEX 6**: The user drops the entity's name ("${config.mentionedBrand}") as a casual recommendation.
 - **INDEX 7+**: A mix of people agreeing, some skepticism, and general chatter about the video. The entity is discussed briefly but not pushed aggressively.`;
     } else {
-      return `### THE NATURAL COMMENT SECTION (LOW/NO BRAND INTEGRATION)
-**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly.
-- **INDEX 0 (OP)**: General comment or question about "${config.videoTitle}".
-- **INDEX 1 - 5**: Organic, natural debate or discussion about the video content. NO MENTION of the target brand/entity. Just normal users talking about the topic.
-- **INDEX 6**: Someone briefly mentions a method or name ("${config.mentionedBrand}") almost as an afterthought or tiny footnote.
-- **INDEX 7+**: The rest of the thread barely acknowledges it or just continues the organic discussion about the video. Focus heavily on general topic debate, skepticism, and normal internet chatter.`;
+      return `### THE NATURAL COMMENT SECTION (LOW BRAND INTEGRATION)
+${baseDirectives}
+- **INDEX 2 & 3**: People offer alternative, generic advice about the video topic, momentarily ignoring INDEX 1.
+- **INDEX 4 - 6**: Organic, natural debate about the topic. NO MENTION of the target brand/entity. Just normal users talking.
+- **INDEX 7**: Someone briefly mentions the entity's name ("${config.mentionedBrand}") almost as an afterthought to agree with INDEX 1.
+- **INDEX 8+**: The rest of the thread continues the organic discussion about the video. The entity is barely acknowledged.`;
     }
   };
 
