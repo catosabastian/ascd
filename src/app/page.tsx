@@ -147,7 +147,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col p-2 md:p-4 gap-4 bg-[var(--color-bg-base)] text-[var(--color-text-main)] font-sans overflow-hidden">
+    <div className="min-h-screen lg:h-screen flex flex-col p-2 md:p-4 gap-4 bg-[var(--color-bg-base)] text-[var(--color-text-main)] font-sans lg:overflow-hidden">
       <ToastContainer />
       <ApiKeyManager isOpen={isKeyManagerOpen} onClose={() => setIsKeyManagerOpen(false)} />
       <HowToUseModal isOpen={isHowToUseOpen} onClose={() => setIsHowToUseOpen(false)} />
@@ -187,20 +187,20 @@ export default function Home() {
       </header>
 
       {/* Main Grid */}
-      <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-0 relative overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-0 relative lg:overflow-hidden">
         
         {/* Left Col: Config & History */}
         <div 
-          className="flex flex-col gap-4 flex-shrink-0 w-full lg:w-[var(--left-width)] h-[45vh] lg:h-full transition-all duration-200"
+          className="flex flex-col gap-4 flex-shrink-0 w-full lg:w-[var(--left-width)] lg:h-full transition-all duration-200"
           style={{ '--left-width': `${leftWidth}px` } as any}
         >
-          <div className="term-panel flex-1 flex flex-col overflow-hidden relative shadow-lg min-h-0">
+          <div className="term-panel flex flex-col relative shadow-lg h-auto lg:flex-1 lg:overflow-hidden lg:min-h-0">
             <div className="absolute right-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-[var(--color-primary)] to-transparent opacity-30 pointer-events-none" />
             <div className="term-header"><Layers size={14} className="text-[var(--color-primary)]" /> Parameters</div>
-            <div className="flex-1 overflow-y-auto custom-scrollbar"><ConfigPanel onGenerate={handleGenerate} isGenerating={isGenerating} /></div>
+            <div className="flex-1 lg:overflow-y-auto custom-scrollbar"><ConfigPanel onGenerate={handleGenerate} isGenerating={isGenerating} /></div>
           </div>
           
-          <div className={`term-panel flex flex-col overflow-hidden transition-all duration-300 shadow-lg ${logsExpanded ? 'flex-1 lg:h-1/3' : 'h-[36px] flex-none'}`}>
+          <div className={`term-panel flex flex-col transition-all duration-300 shadow-lg ${logsExpanded ? 'h-[300px] lg:flex-1 lg:h-1/3 lg:overflow-hidden' : 'h-[36px] flex-none overflow-hidden'}`}>
             <div 
               className="term-header justify-between cursor-pointer hover:bg-[rgba(255,255,255,0.05)] transition-colors !py-2"
               onClick={() => setLogsExpanded(!logsExpanded)}
@@ -214,7 +214,7 @@ export default function Home() {
               )}
             </div>
             {logsExpanded && (
-              <div className="flex-1 overflow-y-auto custom-scrollbar"><HistorySidebar runs={runs} activeRunId={activeRunId} onSelectRun={handleSelectRun} /></div>
+              <div className="flex-1 lg:overflow-y-auto custom-scrollbar overflow-hidden"><HistorySidebar runs={runs} activeRunId={activeRunId} onSelectRun={handleSelectRun} /></div>
             )}
           </div>
         </div>
@@ -226,7 +226,7 @@ export default function Home() {
         />
 
         {/* Center/Right Col: Output */}
-        <div className="flex-1 term-panel flex flex-col min-w-0 shadow-xl relative overflow-hidden h-[50vh] lg:h-auto">
+        <div className="term-panel flex flex-col min-w-0 shadow-xl relative min-h-[600px] lg:h-auto lg:flex-1 lg:overflow-hidden">
           <div className="absolute left-0 top-0 right-0 h-[1px] bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-neon-cyan)] opacity-50 pointer-events-none" />
           
           <div className="flex items-center border-b border-[var(--color-border-dim)] bg-[rgba(20,22,34,0.5)] px-2 pt-2 overflow-x-auto custom-scrollbar whitespace-nowrap">

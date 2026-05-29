@@ -138,7 +138,7 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
   const presetKeys = Object.keys(presets);
 
   return (
-    <div className="p-4 text-[13px] font-sans h-full flex flex-col gap-6 overflow-y-auto">
+    <div className="p-4 text-[13px] font-sans flex flex-col gap-6">
       {/* Header Presets */}
       <div className="border-b border-[var(--color-border-main)] pb-4 flex-shrink-0">
         <div className="flex justify-between items-center mb-3">
