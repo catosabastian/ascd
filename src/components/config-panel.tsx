@@ -123,16 +123,16 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
     setProfessionalismLevel(7); setCynicismLevel(5); setInvestmentHorizon(8); setDebateIntensity(6);
   };
 
-  const applyGunjaMunjaDefaults = () => {
-    setChaosLevel(2);
-    setMemeDensity(2);
-    setSkepticismLevel(3);
-    setProfessionalismLevel(2);
-    setCynicismLevel(2);
-    setInvestmentHorizon(4);
-    setDebateIntensity(2);
-    setSoftCtaStrength(10);
-    showToast('success', 'DEFAULT APPLIED', 'Gunja Munja baseline loaded.');
+  const applyDefaults = () => {
+    setChaosLevel(5);
+    setMemeDensity(5);
+    setSkepticismLevel(5);
+    setProfessionalismLevel(5);
+    setCynicismLevel(5);
+    setInvestmentHorizon(5);
+    setDebateIntensity(5);
+    setSoftCtaStrength(5);
+    showToast('success', 'DEFAULTS RESTORED', 'All sliders reset to 50% baseline.');
   };
 
   const handleGen = () => {
@@ -164,7 +164,7 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
         <div className="flex justify-between items-center mb-3">
           <span className="text-[12px] uppercase font-bold text-[var(--color-primary)]">Configuration</span>
           <div className="flex gap-2">
-            <button onClick={applyGunjaMunjaDefaults} className="btn-term-ghost px-2 py-1 text-[11px]" title="Gunja Munja Baseline">↺ DEFAULT</button>
+            <button onClick={applyDefaults} className="btn-term-ghost px-2 py-1 text-[11px]" title="Reset to 50% Baseline">↺ DEFAULT</button>
             <button onClick={() => setShowPresetSave(!showPresetSave)} className="btn-term-ghost px-2 py-1 text-[11px]" title="Save current sliders"><Save size={12} /> SAVE</button>
             <button onClick={() => setShowPresetMenu(!showPresetMenu)} className="btn-term-ghost px-2 py-1 text-[11px]" title="Load saved preset">PRESETS{presetKeys.length > 0 && ` (${presetKeys.length})`}</button>
           </div>
