@@ -181,36 +181,7 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
           </button>
         </div>
 
-        {/* Lock Gate */}
-        {!unlocked ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 px-8">
-            <div className="w-16 h-16 rounded-full bg-[rgba(99,102,241,0.1)] flex items-center justify-center mb-2">
-              <Lock size={32} className="text-[var(--color-primary)]" />
-            </div>
-            <div className="text-[12px] uppercase tracking-widest font-sans font-semibold text-[var(--color-text-dim)]">Enter Security PIN</div>
-            <div className="flex gap-2 items-center w-full max-w-[240px]">
-              <input
-                type="password"
-                value={pin}
-                onChange={e => setPin(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleUnlock()}
-                placeholder="••••••"
-                maxLength={10}
-                className={`flex-1 text-center tracking-[0.4em] text-lg rounded-lg py-2 ${pinError ? 'border-[var(--color-neon-red)] shadow-[0_0_10px_rgba(239,68,68,0.2)]' : ''}`}
-                autoFocus
-              />
-              <button onClick={handleUnlock} className="btn-term !py-2 !px-4">
-                <Unlock size={16} />
-              </button>
-            </div>
-            {pinError && (
-              <div className="text-[11px] font-sans text-[var(--color-neon-red)] uppercase font-semibold animate-pulse">
-                ✗ Invalid PIN
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
             
             {/* Active Provider Pill Switcher */}
             <div>
@@ -405,7 +376,6 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
               <p className="flex items-center gap-2"><Check size={12} className="text-[#f59e0b]" /> Click provider pill to switch instantly</p>
             </div>
           </div>
-        )}
       </div>
     </>
   );
