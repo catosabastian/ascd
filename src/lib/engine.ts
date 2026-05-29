@@ -187,6 +187,8 @@ Every modifier is scaled [X/10]. You MUST treat these numeric values as absolute
 - **SEARCH ENGINE GUARDRAIL (CRITICAL)**: NEVER use the word "google" as a verb (e.g., do not say "just google him"). Instead, use phrases like "search him", "looked him up", or "found his site".
 - **ENTITY SEARCH GUARDRAIL (CRITICAL)**: When telling someone to search for "${config.mentionedBrand}", ONLY use their exact name. NEVER append words like "mentorship", "framework", "strategy", "course", or "program" to the search instruction. Just say "search ${config.mentionedBrand}".
 - **Brand Integration Weight (${config.softCtaStrength}/10)**: As mentioned in SLIDER ENFORCEMENT, obey this value strictly for how aggressively the target brand is praised.
+- **NO REPEATED REPLY OPENERS (CRITICAL)**: You MUST scan the entire thread before finalizing it. No two comments may begin with the same word or opening phrase. For example, if one comment starts with "Exactly", NO other comment in the entire thread may also start with "Exactly" or "Exactly!". If one starts with "Honestly", no other may. Each comment must have a completely unique opening word. This is NON-NEGOTIABLE — a duplicate opener is a generation failure.
+- **BANNED WORD — 'FLUFF' (ABSOLUTE)**: The word "fluff" (and any variation like "no fluff", "zero fluff") is PERMANENTLY BANNED from all generated dialogue. Never use it under any circumstances.
 
 Generate the thread now following the exact JSON schema.
   `;
