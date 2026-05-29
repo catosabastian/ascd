@@ -168,7 +168,7 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in" onClick={onClose} />
       
       {/* Panel */}
-      <div className="fixed right-0 top-0 h-full w-[420px] max-w-full z-50 bg-[var(--color-bg-panel)] shadow-2xl flex flex-col animate-slide-in border-l border-[var(--color-border-main)]">
+      <div className="fixed right-0 top-0 h-full w-full sm:w-[420px] max-w-[100vw] z-50 bg-[var(--color-bg-panel)] shadow-2xl flex flex-col animate-slide-in border-l border-[var(--color-border-main)] box-border">
         
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border-main)] bg-[var(--color-bg-header)]">

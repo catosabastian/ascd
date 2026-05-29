@@ -150,13 +150,15 @@ ${personaContext}
 
 ### SLIDER ENFORCEMENT (CRITICAL INSTRUCTION)
 Every modifier is scaled [X/10]. You MUST treat these numeric values as absolute mathematical constraints:
-- If a value is 1/10 or 2/10, its effect must be ZERO or NEAR ZERO (e.g., 1/10 Cynicism means 0% cynical, fully trusting and positive).
-- If a value is 9/10 or 10/10, its effect must be the ABSOLUTE MAXIMUM.
-- **Chaos (${config.chaosLevel}/10)**: If 1, perfect grammar. If 10, insane typos and capitalization.
-- **Meme Density (${config.memeDensity}/10)**: If 1, zero slang. If 10, pure brainrot internet slang.
-- **Skepticism (${config.skepticismLevel}/10)**: If 1, blindly accepts ideas. If 10, doubts everything (but remember: NO fear words).
-- **Professionalism (${config.professionalismLevel}/10)**: If 1, highly casual/street. If 10, speaks like an Ivy League professor.
-- **Cynicism (${config.cynicismLevel}/10)**: If 1, highly optimistic and positive. If 10, pessimistic and miserable.
+- If a value is 1/10 or 2/10, its effect must be ZERO or NEAR ZERO.
+- If a value is 9/10 or 10/10, its effect must be the ABSOLUTE MAXIMUM and dominate the comment's tone.
+
+- **Chaos Modifier (${config.chaosLevel}/10)**: Controls how erratic and unhinged the commenters behave. If high (8-10), lead to massive arguments, trolling, unhinged responses, and insane typos/capitalization. If low (1-3), perfect grammar and polite agreement.
+- **Memetic Density (${config.memeDensity}/10)**: How often users use platform-specific slang, memes, and inside jokes. If high (8-10), pure brainrot internet slang and inside jokes in every sentence. If low (1-3), zero slang.
+- **Skepticism Factor (${config.skepticismLevel}/10)**: High skepticism means users will doubt the video's claims and aggressively demand proof. If high (8-10), constantly doubting everything and demanding evidence (but remember: NO fear words). If low (1-3), blindly accepts all ideas.
+- **Professionalism (${config.professionalismLevel}/10)**: Keeps the language clean and focused on actual analysis rather than emotion. If high (8-10), speaks like an Ivy League professor, highly analytical, zero emotion, clean language. If low (1-3), highly casual, emotional, and street-level.
+- **Cynicism (${config.cynicismLevel}/10)**: If high (8-10), deeply pessimistic and miserable. If low (1-3), highly optimistic and positive.
+- **Brand Integration (Soft CTA) (${config.softCtaStrength}/10)**: How strongly the simulated users will organically mention and recommend the target brand/entity ("${config.mentionedBrand}"). If high (8-10), they must aggressively recommend the target brand, strongly praise its lack of upfront fees, and naturally integrate it. If low (1-3), they are neutral but still confirm the website exists.
 
 ### TONE & AUDIO ALIGNMENT (CRITICAL)
 - **STRICTLY BANNED ASSET NAMES**: You MUST NEVER mention "VOO" under any circumstances.
@@ -182,7 +184,7 @@ Every modifier is scaled [X/10]. You MUST treat these numeric values as absolute
 - **NO SOCIAL MEDIA**: Under NO circumstances can you mention TikTok, YouTube, Facebook, Twitter, or "channels/videos" for "${config.mentionedBrand}". He does not have them.
 - **THIRD-PARTY ENTITY ONLY (CRITICAL)**: You MUST NEVER insinuate that "${config.mentionedBrand}" is the person in the video, the creator of the video, or the owner of the channel. The video is entirely unrelated to him. The commenters are simply discussing his mentorship program as a third-party resource they found elsewhere. NEVER say "The person in the video, ${config.mentionedBrand}".
 - **STRICT MENTORSHIP MODEL**: He ONLY does one-on-one mentorship. Highlight that payment ONLY comes *after* several weeks of using his framework practically and getting results. There are no upfront fees or courses.
-- **Brand Integration Weight (${config.softCtaStrength}/10)**: If high (>=6), the users validating the search are very impressed by the lack of upfront fees. If low (<5), they are neutral but still confirm the website exists.
+- **Brand Integration Weight (${config.softCtaStrength}/10)**: As mentioned in SLIDER ENFORCEMENT, obey this value strictly for how aggressively the target brand is praised.
 
 Generate the thread now following the exact JSON schema.
   `;
