@@ -165,27 +165,29 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/60 z-40" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in" onClick={onClose} />
       
       {/* Panel */}
-      <div className="fixed right-0 top-0 h-full w-[420px] z-50 bg-[var(--color-bg-panel)] border-l-2 border-l-[var(--color-neon-amber)] flex flex-col animate-slide-in">
+      <div className="fixed right-0 top-0 h-full w-[420px] max-w-full z-50 bg-[var(--color-bg-panel)] shadow-2xl flex flex-col animate-slide-in border-l border-[var(--color-border-main)]">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-main)] bg-[var(--color-bg-header)]">
-          <div className="flex items-center gap-2 text-[11px] uppercase tracking-widest font-mono">
-            <Key size={14} className="term-text-amber" />
-            <span className="text-[var(--color-text-main)]">API Key Manager</span>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border-main)] bg-[var(--color-bg-header)]">
+          <div className="flex items-center gap-3 text-[14px] uppercase tracking-wider font-sans font-bold">
+            <Key size={18} className="text-[var(--color-primary)]" />
+            <span className="text-white">API Key Manager</span>
           </div>
-          <button onClick={onClose} className="text-[var(--color-text-dim)] hover:text-[var(--color-text-main)] transition-colors">
+          <button onClick={onClose} className="text-[var(--color-text-dim)] hover:text-white transition-colors bg-[rgba(255,255,255,0.05)] p-1 rounded">
             <X size={16} />
           </button>
         </div>
 
         {/* Lock Gate */}
         {!unlocked ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 px-8">
-            <Lock size={32} className="term-text-amber" />
-            <div className="text-[11px] uppercase tracking-widest font-mono text-[var(--color-text-dim)]">Enter PIN to Unlock</div>
+          <div className="flex-1 flex flex-col items-center justify-center gap-6 px-8">
+            <div className="w-16 h-16 rounded-full bg-[rgba(99,102,241,0.1)] flex items-center justify-center mb-2">
+              <Lock size={32} className="text-[var(--color-primary)]" />
+            </div>
+            <div className="text-[12px] uppercase tracking-widest font-sans font-semibold text-[var(--color-text-dim)]">Enter Security PIN</div>
             <div className="flex gap-2 items-center w-full max-w-[240px]">
               <input
                 type="password"
@@ -194,26 +196,26 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
                 onKeyDown={e => e.key === 'Enter' && handleUnlock()}
                 placeholder="••••••"
                 maxLength={10}
-                className={`flex-1 text-center tracking-[0.3em] text-sm ${pinError ? 'border-[var(--color-neon-red)]' : ''}`}
+                className={`flex-1 text-center tracking-[0.4em] text-lg rounded-lg py-2 ${pinError ? 'border-[var(--color-neon-red)] shadow-[0_0_10px_rgba(239,68,68,0.2)]' : ''}`}
                 autoFocus
               />
-              <button onClick={handleUnlock} className="btn-term px-3 py-1.5 text-[10px]">
-                <Unlock size={12} />
+              <button onClick={handleUnlock} className="btn-term !py-2 !px-4">
+                <Unlock size={16} />
               </button>
             </div>
             {pinError && (
-              <div className="text-[10px] font-mono term-text-red uppercase animate-pulse">
+              <div className="text-[11px] font-sans text-[var(--color-neon-red)] uppercase font-semibold animate-pulse">
                 ✗ Invalid PIN
               </div>
             )}
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
             
             {/* Active Provider Pill Switcher */}
             <div>
-              <div className="text-[9px] uppercase tracking-widest font-mono text-[var(--color-text-dim)] mb-2">Active Provider</div>
-              <div className="flex gap-1 p-1 bg-[var(--color-bg-base)] border border-[var(--color-border-main)]">
+              <div className="text-[11px] uppercase tracking-wider font-sans font-bold text-[var(--color-text-dim)] mb-3">Active Provider</div>
+              <div className="flex flex-wrap gap-2">
                 {Object.entries(PROVIDER_INFO).map(([prov, info]) => {
                   const provKeys = keys.filter(k => k.provider === prov && k.isActive);
                   const isActive = selectedKey?.provider === prov;
@@ -227,18 +229,17 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
                       }}
                       disabled={!hasKey}
                       className={`
-                        flex-1 py-2 px-3 text-[10px] font-mono uppercase tracking-wider transition-all duration-200 border
+                        relative flex-1 min-w-[30%] py-2.5 px-2 text-[10px] font-sans uppercase tracking-wider rounded-lg transition-all duration-200 border
                         ${isActive 
-                          ? 'bg-[var(--color-neon-green)] text-black border-[var(--color-neon-green)] font-bold' 
+                          ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-[0_0_15px_rgba(99,102,241,0.3)] font-bold' 
                           : hasKey 
-                            ? 'bg-transparent text-[var(--color-text-dim)] border-transparent hover:border-[var(--color-border-bright)] hover:text-[var(--color-text-main)] cursor-pointer'
-                            : 'bg-transparent text-[var(--color-text-dark)] border-transparent cursor-not-allowed opacity-40'
+                            ? 'bg-[rgba(255,255,255,0.03)] text-[var(--color-text-dim)] border-[var(--color-border-main)] hover:border-[var(--color-primary)] hover:text-white cursor-pointer'
+                            : 'bg-transparent text-[var(--color-border-bright)] border-[var(--color-border-dim)] cursor-not-allowed opacity-50'
                         }
                       `}
                     >
-                      {switchingId && isActive && <RefreshCw size={10} className="inline mr-1 animate-spin" />}
-                      {info.label}
-                      {!hasKey && <span className="block text-[8px] opacity-60 mt-0.5">No Key</span>}
+                      {switchingId && isActive && <RefreshCw size={12} className="inline mr-1 animate-spin" />}
+                      <span className="truncate">{info.label}</span>
                     </button>
                   );
                 })}
@@ -246,158 +247,162 @@ export default function ApiKeyManager({ isOpen, onClose }: Props) {
             </div>
 
             {/* Keys List by Provider */}
-            {Object.entries(PROVIDER_INFO).map(([prov, info]) => {
-              const provKeys = keys.filter(k => k.provider === prov);
-              const isCollapsed = collapsedProviders[prov];
-              return (
-                <div key={prov} className="border border-[var(--color-border-main)] bg-[var(--color-bg-base)]">
-                  <div 
-                    className="flex items-center justify-between px-3 py-2 border-b border-[var(--color-border-dim)] bg-[var(--color-bg-header)] cursor-pointer hover:bg-[var(--color-bg-hover)]"
-                    onClick={() => toggleCollapse(prov)}
-                  >
-                    <div className="flex items-center gap-2">
-                      {isCollapsed ? <ChevronRight size={12} className="text-[var(--color-text-dim)]" /> : <ChevronDown size={12} className="text-[var(--color-text-dim)]" />}
-                      <div className="w-2 h-2 rounded-full" style={{ background: info.color }} />
-                      <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: info.color }}>
-                        {info.label}
-                      </span>
-                      <span className="text-[9px] text-[var(--color-text-dark)]">
-                        ({provKeys.length} key{provKeys.length !== 1 ? 's' : ''})
-                      </span>
-                    </div>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setCollapsedProviders(prev => ({ ...prev, [prov]: false })); setAddingProvider(prov); setNewKeyValue(''); }}
-                      className="btn-term-ghost text-[9px] flex items-center gap-1 hover:term-text-green"
+            <div className="space-y-3">
+              {Object.entries(PROVIDER_INFO).map(([prov, info]) => {
+                const provKeys = keys.filter(k => k.provider === prov);
+                const isCollapsed = collapsedProviders[prov];
+                return (
+                  <div key={prov} className="border border-[var(--color-border-main)] bg-[rgba(0,0,0,0.2)] rounded-lg overflow-hidden">
+                    <div 
+                      className="flex items-center justify-between px-4 py-3 bg-[rgba(255,255,255,0.02)] cursor-pointer hover:bg-[rgba(255,255,255,0.04)] transition-colors"
+                      onClick={() => toggleCollapse(prov)}
                     >
-                      <Plus size={10} /> Add
-                    </button>
-                  </div>
+                      <div className="flex items-center gap-3">
+                        {isCollapsed ? <ChevronRight size={14} className="text-[var(--color-text-dim)]" /> : <ChevronDown size={14} className="text-[var(--color-text-dim)]" />}
+                        <div className="w-2.5 h-2.5 rounded-full shadow-md" style={{ background: info.color }} />
+                        <span className="text-[12px] font-sans font-bold uppercase tracking-wider text-white">
+                          {info.label}
+                        </span>
+                        <span className="text-[11px] text-[var(--color-text-dark)] font-medium">
+                          ({provKeys.length})
+                        </span>
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setCollapsedProviders(prev => ({ ...prev, [prov]: false })); setAddingProvider(prov); setNewKeyValue(''); }}
+                        className="btn-term-ghost !px-2 !py-1 text-[10px] flex items-center gap-1 text-[var(--color-primary)] hover:bg-[rgba(99,102,241,0.1)]"
+                      >
+                        <Plus size={12} /> ADD
+                      </button>
+                    </div>
 
-                  {!isCollapsed && (
-                    <div className="divide-y divide-[var(--color-border-dim)]">
-                    {provKeys.map(k => (
-                      <div key={k.id} className={`px-3 py-2.5 transition-colors ${k.isSelected ? 'bg-[#0a1a0a]' : ''}`}>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            {k.isSelected && (
-                              <span className="text-[8px] font-mono bg-[var(--color-neon-green)] text-black px-1.5 py-0.5 uppercase font-bold">
-                                Active
-                              </span>
-                            )}
-                            {k.isExhausted && (
-                              <span className="text-[8px] font-mono bg-[var(--color-neon-red)] text-white px-1.5 py-0.5 uppercase font-bold flex items-center gap-1">
-                                <AlertTriangle size={8} /> Exhausted
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            {k.isExhausted && (
-                              <button onClick={() => handleResetExhaustion(k.id)} className="btn-term-ghost text-[9px] hover:term-text-amber" title="Reset">
-                                <RefreshCw size={10} />
+                    {!isCollapsed && (
+                      <div className="divide-y divide-[var(--color-border-dim)]">
+                      {provKeys.map(k => (
+                        <div key={k.id} className={`px-4 py-3 transition-colors ${k.isSelected ? 'bg-[rgba(99,102,241,0.05)]' : ''}`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              {k.isSelected && (
+                                <span className="text-[9px] font-sans bg-[var(--color-primary)] text-white px-2 py-0.5 rounded uppercase font-bold shadow-sm">
+                                  Active
+                                </span>
+                              )}
+                              {k.isExhausted && (
+                                <span className="text-[9px] font-sans bg-[var(--color-neon-red)] text-white px-2 py-0.5 rounded uppercase font-bold flex items-center gap-1 shadow-sm">
+                                  <AlertTriangle size={10} /> Exhausted
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {k.isExhausted && (
+                                <button onClick={() => handleResetExhaustion(k.id)} className="btn-term-ghost !p-1 text-[10px] hover:text-[var(--color-neon-amber)]" title="Reset">
+                                  <RefreshCw size={12} />
+                                </button>
+                              )}
+                              {!k.isSelected && (
+                                <button onClick={() => handleSelect(k.id)} className="btn-term-ghost !p-1 text-[10px] hover:text-[var(--color-neon-green)]" title="Select">
+                                  <Check size={12} />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => { setEditingId(k.id); setEditValue(''); }}
+                                className="btn-term-ghost !px-2 !py-1 text-[10px] hover:text-[var(--color-neon-cyan)]"
+                              >
+                                Edit
                               </button>
-                            )}
-                            {!k.isSelected && (
-                              <button onClick={() => handleSelect(k.id)} className="btn-term-ghost text-[9px] hover:term-text-green" title="Select">
-                                <Check size={10} />
+                              <button onClick={() => handleDelete(k.id)} className="btn-term-ghost !p-1 text-[10px] hover:text-[var(--color-neon-red)]">
+                                <Trash2 size={12} />
                               </button>
-                            )}
-                            <button
-                              onClick={() => { setEditingId(k.id); setEditValue(''); }}
-                              className="btn-term-ghost text-[9px] hover:term-text-cyan"
-                            >
-                              Edit
-                            </button>
-                            <button onClick={() => handleDelete(k.id)} className="btn-term-ghost text-[9px] hover:term-text-red">
-                              <Trash2 size={10} />
-                            </button>
+                            </div>
                           </div>
+
+                          {editingId === k.id ? (
+                            <div className="flex gap-2 mt-2">
+                              <input
+                                type="text"
+                                value={editValue}
+                                onChange={e => setEditValue(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && handleSaveEdit(k.id)}
+                                placeholder={`Paste new ${prov} key...`}
+                                className="flex-1 text-[11px]"
+                                autoFocus
+                              />
+                              <button onClick={() => handleSaveEdit(k.id)} className="btn-term !px-3" disabled={loading}>
+                                Save
+                              </button>
+                              <button onClick={() => setEditingId(null)} className="btn-term-ghost !px-2">
+                                <X size={14} />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-2">
+                              <div className="text-[12px] font-mono text-[var(--color-text-dim)] tracking-wider bg-[rgba(0,0,0,0.3)] p-2 rounded border border-[var(--color-border-dim)]">
+                                {k.maskedKey}
+                              </div>
+                              <div className="flex items-center gap-3 mt-1 bg-[rgba(255,255,255,0.02)] p-2 rounded">
+                                <span className="text-[10px] text-[var(--color-text-dim)] font-bold uppercase">Model:</span>
+                                <select 
+                                  value={k.selectedModel || PROVIDERS[prov as keyof typeof PROVIDERS]?.defaultModel}
+                                  onChange={(e) => handleModelChange(k.id, e.target.value)}
+                                  className="flex-1 bg-transparent border-none text-[11px] text-white p-0 focus:ring-0 cursor-pointer"
+                                  style={{ backgroundImage: 'none' }}
+                                >
+                                  {PROVIDERS[prov as keyof typeof PROVIDERS]?.models.map(m => (
+                                    <option key={m} value={m} className="bg-[var(--color-bg-panel)]">{m}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown size={12} className="text-[var(--color-text-dim)] pointer-events-none" />
+                              </div>
+                            </div>
+                          )}
+
+                          {k.lastUsedAt && (
+                            <div className="text-[10px] text-[var(--color-text-dark)] mt-3 font-sans italic">
+                              Last used: {new Date(k.lastUsedAt).toLocaleString()}
+                            </div>
+                          )}
                         </div>
+                      ))}
 
-                        {editingId === k.id ? (
-                          <div className="flex gap-1 mt-1">
+                      {/* Add new key inline */}
+                      {addingProvider === prov && (
+                        <div className="px-4 py-3 bg-[rgba(99,102,241,0.05)] border-t border-[var(--color-border-dim)]">
+                          <div className="flex gap-2">
                             <input
                               type="text"
-                              value={editValue}
-                              onChange={e => setEditValue(e.target.value)}
-                              onKeyDown={e => e.key === 'Enter' && handleSaveEdit(k.id)}
-                              placeholder={`Paste new ${prov} key...`}
-                              className="flex-1 text-[10px]"
+                              value={newKeyValue}
+                              onChange={e => setNewKeyValue(e.target.value)}
+                              onKeyDown={e => e.key === 'Enter' && handleAddKey(prov)}
+                              placeholder={info.placeholder}
+                              className="flex-1 text-[11px]"
                               autoFocus
                             />
-                            <button onClick={() => handleSaveEdit(k.id)} className="btn-term px-2 py-1 text-[9px]" disabled={loading}>
-                              Save
+                            <button onClick={() => handleAddKey(prov)} className="btn-term !px-3" disabled={loading}>
+                              <Check size={14} />
                             </button>
-                            <button onClick={() => setEditingId(null)} className="btn-term-ghost text-[9px]">
-                              ✗
+                            <button onClick={() => setAddingProvider(null)} className="btn-term-ghost !px-2">
+                              <X size={14} />
                             </button>
                           </div>
-                        ) : (
-                          <div className="flex flex-col gap-1">
-                            <div className="text-[11px] font-mono text-[var(--color-text-dim)] tracking-wider">
-                              {k.maskedKey}
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[9px] text-[var(--color-text-dark)] uppercase">Model:</span>
-                              <select 
-                                value={k.selectedModel || PROVIDERS[prov as keyof typeof PROVIDERS]?.defaultModel}
-                                onChange={(e) => handleModelChange(k.id, e.target.value)}
-                                className="bg-[var(--color-bg-panel)] border border-[var(--color-border-dim)] text-[9px] text-[var(--color-text-main)] py-0.5 px-1 outline-none"
-                              >
-                                {PROVIDERS[prov as keyof typeof PROVIDERS]?.models.map(m => (
-                                  <option key={m} value={m}>{m}</option>
-                                ))}
-                              </select>
-                            </div>
-                          </div>
-                        )}
-
-                        {k.lastUsedAt && (
-                          <div className="text-[8px] text-[var(--color-text-dark)] mt-2 font-mono">
-                            Last used: {new Date(k.lastUsedAt).toLocaleString()}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-
-                    {/* Add new key inline */}
-                    {addingProvider === prov && (
-                      <div className="px-3 py-2.5 bg-[var(--color-bg-hover)]">
-                        <div className="flex gap-1">
-                          <input
-                            type="text"
-                            value={newKeyValue}
-                            onChange={e => setNewKeyValue(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && handleAddKey(prov)}
-                            placeholder={info.placeholder}
-                            className="flex-1 text-[10px]"
-                            autoFocus
-                          />
-                          <button onClick={() => handleAddKey(prov)} className="btn-term px-2 py-1 text-[9px]" disabled={loading}>
-                            <Check size={10} />
-                          </button>
-                          <button onClick={() => setAddingProvider(null)} className="btn-term-ghost text-[9px]">
-                            ✗
-                          </button>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {provKeys.length === 0 && addingProvider !== prov && (
-                      <div className="px-3 py-3 text-[10px] text-[var(--color-text-dark)] font-mono italic">
-                        No keys configured
-                      </div>
+                      {provKeys.length === 0 && addingProvider !== prov && (
+                        <div className="px-4 py-4 text-[11px] text-[var(--color-text-dark)] font-sans italic text-center">
+                          No keys configured
+                        </div>
+                      )}
+                    </div>
                     )}
                   </div>
-                  )}
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
 
             {/* Info footer */}
-            <div className="text-[9px] text-[var(--color-text-dark)] font-mono leading-relaxed border-t border-[var(--color-border-dim)] pt-3 mt-2">
-              <p className="mb-1">⚡ Keys are AES-256 encrypted at rest</p>
-              <p className="mb-1">🔄 Auto-fallback on quota exhaustion</p>
-              <p>🔑 Click provider pill to switch instantly</p>
+            <div className="text-[11px] text-[var(--color-text-dim)] font-sans leading-relaxed border-t border-[var(--color-border-dim)] pt-4 mt-4 space-y-1">
+              <p className="flex items-center gap-2"><Lock size={12} className="text-[#10b981]" /> Keys are AES-256 encrypted at rest</p>
+              <p className="flex items-center gap-2"><RefreshCw size={12} className="text-[#38bdf8]" /> Auto-fallback on quota exhaustion</p>
+              <p className="flex items-center gap-2"><Check size={12} className="text-[#f59e0b]" /> Click provider pill to switch instantly</p>
             </div>
           </div>
         )}

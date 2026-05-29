@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Zap, Shuffle, Server, RadioReceiver, Save, Trash2 } from 'lucide-react';
 import { showToast } from '@/components/toast';
 
@@ -49,29 +49,33 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
   const [presetName, setPresetName] = useState('');
   const [showPresetSave, setShowPresetSave] = useState(false);
   const [showPresetMenu, setShowPresetMenu] = useState(false);
+  const [presets, setPresets] = useState<Record<string, any>>({});
 
-  const getPresets = (): Record<string, any> => {
+  useEffect(() => {
     try {
-      return JSON.parse(localStorage.getItem('threadforge_presets') || '{}');
-    } catch { return {}; }
-  };
+      const stored = localStorage.getItem('threadforge_presets');
+      if (stored) {
+        setPresets(JSON.parse(stored));
+      }
+    } catch { }
+  }, []);
 
   const savePreset = () => {
     if (!presetName.trim()) return;
-    const presets = getPresets();
-    presets[presetName.trim()] = {
+    const newPresets = { ...presets };
+    newPresets[presetName.trim()] = {
       chaosLevel, memeDensity, skepticismLevel, softCtaStrength,
       professionalismLevel, cynicismLevel, investmentHorizon, debateIntensity,
       emotionalDrift, marketCycleMode,
     };
-    localStorage.setItem('threadforge_presets', JSON.stringify(presets));
+    setPresets(newPresets);
+    localStorage.setItem('threadforge_presets', JSON.stringify(newPresets));
     showToast('success', 'PRESET SAVED', `"${presetName.trim()}" stored locally.`);
     setPresetName('');
     setShowPresetSave(false);
   };
 
   const loadPreset = (name: string) => {
-    const presets = getPresets();
     const p = presets[name];
     if (!p) return;
     setChaosLevel(p.chaosLevel); setMemeDensity(p.memeDensity);
@@ -85,9 +89,10 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
 
   const deletePreset = (name: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const presets = getPresets();
-    delete presets[name];
-    localStorage.setItem('threadforge_presets', JSON.stringify(presets));
+    const newPresets = { ...presets };
+    delete newPresets[name];
+    setPresets(newPresets);
+    localStorage.setItem('threadforge_presets', JSON.stringify(newPresets));
     showToast('success', 'PRESET DELETED', `"${name}" removed.`);
   };
 
@@ -130,18 +135,18 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
     });
   };
 
-  const presetKeys = Object.keys(getPresets());
+  const presetKeys = Object.keys(presets);
 
   return (
-    <div className="p-3 text-[11px] font-mono h-full flex flex-col gap-4 overflow-y-auto">
+    <div className="p-4 text-[13px] font-sans h-full flex flex-col gap-6 overflow-y-auto">
       {/* Header Presets */}
-      <div className="border-b border-[var(--color-border-main)] pb-2 flex-shrink-0">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-[10px] uppercase font-bold text-[var(--color-neon-cyan)]">VECTOR SECTOR</span>
-          <div className="flex gap-1">
-            <button onClick={applyGunjaMunjaDefaults} className="btn-term-ghost px-2 py-0.5 text-[9px]" title="Gunja Munja Baseline">↺ DEFAULT</button>
-            <button onClick={() => setShowPresetSave(!showPresetSave)} className="btn-term-ghost px-2 py-0.5 text-[9px]" title="Save current sliders"><Save size={10} /> SAVE</button>
-            <button onClick={() => setShowPresetMenu(!showPresetMenu)} className="btn-term-ghost px-2 py-0.5 text-[9px]" title="Load saved preset">PRESETS{presetKeys.length > 0 && ` (${presetKeys.length})`}</button>
+      <div className="border-b border-[var(--color-border-main)] pb-4 flex-shrink-0">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-[12px] uppercase font-bold text-[var(--color-primary)]">Configuration</span>
+          <div className="flex gap-2">
+            <button onClick={applyGunjaMunjaDefaults} className="btn-term-ghost px-2 py-1 text-[11px]" title="Gunja Munja Baseline">↺ DEFAULT</button>
+            <button onClick={() => setShowPresetSave(!showPresetSave)} className="btn-term-ghost px-2 py-1 text-[11px]" title="Save current sliders"><Save size={12} /> SAVE</button>
+            <button onClick={() => setShowPresetMenu(!showPresetMenu)} className="btn-term-ghost px-2 py-1 text-[11px]" title="Load saved preset">PRESETS{presetKeys.length > 0 && ` (${presetKeys.length})`}</button>
           </div>
         </div>
 
