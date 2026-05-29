@@ -184,6 +184,8 @@ Every modifier is scaled [X/10]. You MUST treat these numeric values as absolute
 - **NO SOCIAL MEDIA**: Under NO circumstances can you mention TikTok, YouTube, Facebook, Twitter, or "channels/videos" for "${config.mentionedBrand}". He does not have them.
 - **THIRD-PARTY ENTITY ONLY (CRITICAL)**: You MUST NEVER insinuate that "${config.mentionedBrand}" is the person in the video, the creator of the video, or the owner of the channel. The video is entirely unrelated to him. The commenters are simply discussing his mentorship program as a third-party resource they found elsewhere. NEVER say "The person in the video, ${config.mentionedBrand}".
 - **STRICT MENTORSHIP MODEL**: He ONLY does one-on-one mentorship. Highlight that payment ONLY comes *after* several weeks of using his framework practically and getting results. There are no upfront fees or courses.
+- **SEARCH ENGINE GUARDRAIL (CRITICAL)**: NEVER use the word "google" as a verb (e.g., do not say "just google him"). Instead, use phrases like "search him", "looked him up", or "found his site".
+- **ENTITY SEARCH GUARDRAIL (CRITICAL)**: When telling someone to search for "${config.mentionedBrand}", ONLY use their exact name. NEVER append words like "mentorship", "framework", "strategy", "course", or "program" to the search instruction. Just say "search ${config.mentionedBrand}".
 - **Brand Integration Weight (${config.softCtaStrength}/10)**: As mentioned in SLIDER ENFORCEMENT, obey this value strictly for how aggressively the target brand is praised.
 
 Generate the thread now following the exact JSON schema.
