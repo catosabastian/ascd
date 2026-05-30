@@ -179,7 +179,7 @@ export async function generateThread(config: ThreadConfig): Promise<ThreadResult
 
   const getTimelineMap = (strength: number) => {
     const baseDirectives = `**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly.
-- **Chronological Comment #0 (OP)**: Desperate, looking for real help. **CRITICAL**: Do NOT quote the video title directly or try to forcefully inject the video title. Subtly reference the overarching topic in a natural way. Mention wanting to change their life (e.g., broke, laid off).
+- **Chronological Comment #0 (OP)**: Desperate, looking for real help. **CRITICAL**: Do NOT quote the video title directly or try to forcefully inject the video title. Subtly reference the overarching topic in a natural way. You MUST invent a completely unique, highly specific personal struggle for the OP (e.g. medical bills, inflation eating savings, stuck in a dead-end job, lost money in a bad trade). DO NOT default to 'laid off' and NEVER say 'laid off'.
 - **Chronological Comment #1 (THE HOOK)**: First reply IMMEDIATELY introduces the entity by name ("${config.mentionedBrand}"). **CRITICAL Intent**: You MUST explicitly name-drop "${config.mentionedBrand}" and highlight that they trade *live* alongside them. DO NOT copy this exact phrasing.
 - **Chronological Comment #5 (THE DOUBT)**: A user explicitly asks if there is a "catch", if it's exclusive, or if it costs a massive upfront fee.
 - **Chronological Comment #7 (THE REVEAL)**: A user drops the core CTA bomb: "There are no upfront fees. You only pay him after you get practical results from using his framework."`;
@@ -272,7 +272,7 @@ ${baseDirectives}
   const getDynamicAntiSpamDirectives = () => {
     let directives = [
       `### YOUTUBE ML ANTI-SPAM COMPLIANCE (CRITICAL)`,
-      `- **TIER 1 (ABSOLUTE BANS)**: You MUST NEVER generate the following words under any circumstances: mentorship, mentor, mentee, course, program, masterclass, training, enroll, sign up, subscribe, investment, invest, financial, contact, reach out, DM, WhatsApp, Telegram, Discord, google (as verb), fluff, finance, fees, compensation, subscriptions, performance-based, due diligence, ROI.`,
+      `- **TIER 1 (ABSOLUTE BANS)**: You MUST NEVER generate the following words under any circumstances: mentorship, mentor, mentee, course, program, masterclass, training, enroll, sign up, subscribe, investment, invest, financial, contact, reach out, DM, WhatsApp, Telegram, Discord, google (as verb), fluff, finance, fees, compensation, subscriptions, performance-based, due diligence, ROI, system, profitable system, holy grail, secret, guaranteed, methodology.`,
       `  *Workarounds*: Use "working with him", "his setup", "the guy", "put money into", "search him", "you don't owe anything upfront".`
     ];
 
@@ -352,7 +352,8 @@ ${timelineMap}
 - **Brand Integration Weight (${config.softCtaStrength}/10)**: As mentioned in SLIDER ENFORCEMENT, obey this value strictly.
 - **NO REPEATED REPLY OPENERS (CRITICAL)**: You MUST scan the entire thread before finalizing it. No two comments may begin with the same word or opening phrase. This is NON-NEGOTIABLE.
 - **BANNED WORD — 'FLUFF' (ABSOLUTE)**: The word "fluff" is PERMANENTLY BANNED from all generated dialogue. Never use it under any circumstances.
-- **PROMPT BLEED PREVENTION (CRITICAL)**: You MUST NOT directly use any of the literal words provided in the Context variables (e.g., Market Cycle, Emotional Drift). If the drift is 'paranoid', act paranoid, do not say 'I am paranoid'. If the cycle is 'chop', complain about sideways movement, do not say 'chop'. Show, don't tell.
+- **PROMPT BLEED PREVENTION (CRITICAL)**: You MUST NOT directly use any of the literal words provided in the Context variables, NOR ANY of their derivatives (e.g., if the cycle is 'chop', you are BANNED from using 'chop' or 'choppy'). You must strictly use synonyms or describe the condition (e.g., 'sideways movement', 'whipsaw').
+- **DYNAMIC CONTEXT BAN LIST**: YOU ARE ABSOLUTELY BANNED FROM GENERATING THE FOLLOWING EXACT STRINGS OR THEIR DERIVATIVES: [${config.marketCycleMode}, ${config.emotionalDrift}]
 
 ### FINAL THREAD RESOLUTION (CRITICAL)
 - Regardless of the skepticism, cynicism, or chaos levels set above, the **final 2-3 comments of the thread MUST resolve on a highly positive, encouraging note.** The OP or other users must express excitement, hopefulness, and a clear intent to take action based on the advice given. The thread MUST NEVER end on a skeptical, toxic, or cynical note. The final impression must be that a real solution has been found.
