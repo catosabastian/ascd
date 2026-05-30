@@ -55,38 +55,94 @@ const pick = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-const ARCHETYPES = [
-  { label: 'Burned Swing Trader', emotion: 'frustrated', grammar: [4,7], slang: [4,8], aggro: [5,8], stability: [2,5], backstories: ['lost 40% on meme stocks','got wrecked by earnings season'] },
-  { label: 'ETF Boomer', emotion: 'cautious', grammar: [7,10], slang: [1,3], aggro: [1,4], stability: [7,10], backstories: ['been DCA-ing VOO for 20 years','doesnt understand options'] },
-  { label: 'Crypto Survivor', emotion: 'cynical', grammar: [4,7], slang: [5,9], aggro: [3,7], stability: [3,6], backstories: ['survived 3 bear markets','holds bags from 2021'] },
-  { label: 'Macro Doomer', emotion: 'paranoid', grammar: [6,9], slang: [2,5], aggro: [5,9], stability: [2,5], backstories: ['thinks the fed is out of tools','has 60% in gold'] },
-  { label: 'Meme Gambler', emotion: 'euphoric', grammar: [2,5], slang: [7,10], aggro: [2,6], stability: [1,4], backstories: ['YOLO life savings into 0dte calls','diamond hands everything'] },
-  { label: 'Skeptical Lurker', emotion: 'skeptical', grammar: [6,9], slang: [2,5], aggro: [3,6], stability: [6,9], backstories: ['reads everything posts nothing','trusts no guru'] },
-  { label: 'Calm Realist', emotion: 'balanced', grammar: [7,10], slang: [1,4], aggro: [1,3], stability: [8,10], backstories: ['boring balanced portfolio','ignores the noise'] },
-  { label: 'Anti-Guru Commenter', emotion: 'hostile', grammar: [5,8], slang: [3,7], aggro: [6,10], stability: [2,5], backstories: ['hates finance influencers','got scammed by a course once'] },
-  { label: 'Newbie Investor', emotion: 'confused', grammar: [4,7], slang: [3,6], aggro: [1,4], stability: [3,6], backstories: ['doesnt know what a P/E ratio is','heard about stocks from TikTok'] },
-  { label: 'Tech Bro Maximalist', emotion: 'arrogant', grammar: [6,9], slang: [3,7], aggro: [4,8], stability: [4,7], backstories: ['portfolio is NVDA MSFT AAPL','thinks AI will 10x everything'] },
-];
-
-const U_PRE = ['dark','crypto','stock','bull','bear','diamond','degen','whale','moon','hodl','spy','btc','eth','macro','yield','ape','sigma','based'];
-const U_MID = ['trader','investor','maxi','hands','gang','chad','anon','dude','hawk','shark','hunter','doomer','bloomer','runner','wolf'];
-const U_SEP = ['_','-','','.'];
-
-function genUsername(): string {
-  const num = Math.random() < 0.6 ? String(rand(1, 9999)) : '';
-  return `${pick(U_PRE)}${pick(U_SEP)}${pick(U_MID)}${num}`;
-}
+  // Shuffle array helper
+  const shuffle = (array: any[]) => {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex > 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+    return array;
+  };
 
 function generatePersonas(config: ThreadConfig): GenPersona[] {
   const count = 17; // Force exactly 17 (1 OP + 16 deep replies)
-  const selected: any[] = [];
-  for (let i = 0; i < count; i++) {
-    selected.push(pick(ARCHETYPES));
+  
+  const isCrypto = config.marketFocus.toLowerCase().includes('crypto');
+  const isForex = config.marketFocus.toLowerCase().includes('forex');
+  const isStocks = !isCrypto && !isForex; // Default to stocks/general
+
+  let uPre = ['dark','bull','bear','diamond','whale','sigma','based','alpha','iron'];
+  if (isCrypto) uPre.push('crypto','degen','moon','hodl','btc','eth','ape');
+  else if (isForex) uPre.push('macro','pip','yield','forex','chart');
+  else uPre.push('stock','spy','yield','value','bogle','div');
+
+  const uMid = ['trader','investor','maxi','hands','gang','chad','anon','dude','hawk','shark','hunter','doomer','bloomer','runner','wolf'];
+  const uSep = ['_','-','','.'];
+
+  const genUsername = () => {
+    const num = Math.random() < 0.6 ? String(rand(1, 9999)) : '';
+    return `${pick(uPre)}${pick(uSep)}${pick(uMid)}${num}`;
+  };
+
+  let backstories: string[] = [];
+  if (isCrypto) {
+    backstories = [
+      'lost 40% on meme coins', 'survived multiple bear markets', 'holds bags from 2021',
+      'YOLO life savings into altcoins', 'got liquidated on 100x leverage', 'believes in web3 utility',
+      'made it big early, now plays it safe', 'hates fiat currency', 'stuck paying high gas fees',
+      'chasing the next halving pump', 'got scammed by a rug pull', 'airdrop farmer',
+      'mining since 2017', 'hacked once and paranoid', 'only buys cold storage',
+      'day trades volatility', 'thinks all tokens are securities', 'reads whitepapers for fun',
+      'buying the dip constantly', 'waiting for alt season'
+    ];
+  } else if (isForex) {
+    backstories = [
+      'blown 3 accounts trading gold', 'trades the London session', 'obsessed with interest rates',
+      'scalping EUR/USD', 'hates central banks', 'relies entirely on technical analysis',
+      'macro data junkie', 'lost big on a flash crash', 'trades with too much leverage',
+      'prop firm funded trader', 'failed prop firm challenges 5 times', 'waiting for NFP release',
+      'reads economic calendars', 'carries overnight swap fees', 'swing trades minor pairs',
+      'believes in price action only', 'uses algorithmic bots', 'hedges everything',
+      'trading oil breakouts', 'stuck in a losing streak'
+    ];
+  } else {
+    backstories = [
+      'lost 40% on risky tech options', 'been DCA-ing blue chips for 20 years', 'doesnt understand derivatives',
+      'got wrecked by earnings season', 'thinks the fed is out of tools', 'has 60% in gold/cash',
+      'YOLO life savings into 0dte calls', 'diamond hands dividend stocks', 'reads everything posts nothing',
+      'trusts no financial guru', 'boring balanced portfolio', 'ignores the daily noise',
+      'hates finance influencers', 'got scammed by a fake course once', 'doesnt know what a P/E ratio is',
+      'heard about investing from TikTok', 'portfolio is mostly NVDA MSFT AAPL', 'thinks AI will 10x everything',
+      'follows index funds strictly', 'trying to recover from a bad stock pick'
+    ];
   }
 
-  return selected.map((arch, i) => {
-    const chaosBoost = (config.chaosLevel - 5) / 10;
-    return {
+  // Ensure enough backstories and shuffle them
+  backstories = shuffle(backstories);
+
+  const archetypes = [
+    { label: 'Burned Trader', emotion: 'frustrated', grammar: [4,7], slang: [4,8], aggro: [5,8], stability: [2,5] },
+    { label: 'Boomer Investor', emotion: 'cautious', grammar: [7,10], slang: [1,3], aggro: [1,4], stability: [7,10] },
+    { label: 'Market Survivor', emotion: 'cynical', grammar: [4,7], slang: [5,9], aggro: [3,7], stability: [3,6] },
+    { label: 'Macro Doomer', emotion: 'paranoid', grammar: [6,9], slang: [2,5], aggro: [5,9], stability: [2,5] },
+    { label: 'Gambler', emotion: 'euphoric', grammar: [2,5], slang: [7,10], aggro: [2,6], stability: [1,4] },
+    { label: 'Skeptical Lurker', emotion: 'skeptical', grammar: [6,9], slang: [2,5], aggro: [3,6], stability: [6,9] },
+    { label: 'Calm Realist', emotion: 'balanced', grammar: [7,10], slang: [1,4], aggro: [1,3], stability: [8,10] },
+    { label: 'Anti-Influencer', emotion: 'hostile', grammar: [5,8], slang: [3,7], aggro: [6,10], stability: [2,5] },
+    { label: 'Newbie', emotion: 'confused', grammar: [4,7], slang: [3,6], aggro: [1,4], stability: [3,6] },
+    { label: 'Maximalist', emotion: 'arrogant', grammar: [6,9], slang: [3,7], aggro: [4,8], stability: [4,7] },
+  ];
+
+  const selected: GenPersona[] = [];
+  const chaosBoost = (config.chaosLevel - 5) / 10;
+  
+  for (let i = 0; i < count; i++) {
+    const arch = pick(archetypes);
+    const backstory = backstories.length > 0 ? backstories.pop()! : 'Just trying to survive the market';
+    
+    selected.push({
       id: `persona-${i}-${uid()}`,
       username: genUsername(),
       archetypeLabel: arch.label,
@@ -95,10 +151,12 @@ function generatePersonas(config: ThreadConfig): GenPersona[] {
       slangDensity: clamp(rand(arch.slang[0], arch.slang[1]) + Math.round(config.memeDensity / 3), 1, 10),
       aggressionLevel: clamp(rand(arch.aggro[0], arch.aggro[1]) + Math.round(chaosBoost * 2), 1, 10),
       emotionalStability: clamp(rand(arch.stability[0], arch.stability[1]) - Math.round(chaosBoost * 2), 1, 10),
-      backstory: pick(arch.backstories),
+      backstory: backstory,
       avatarSeed: `${Date.now()}-${rand(1000, 9999)}`,
-    };
-  });
+    });
+  }
+
+  return selected;
 }
 
 export async function generateThread(config: ThreadConfig): Promise<ThreadResult> {
@@ -121,32 +179,32 @@ export async function generateThread(config: ThreadConfig): Promise<ThreadResult
 
   const getTimelineMap = (strength: number) => {
     const baseDirectives = `**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly.
-- **INDEX 0 (OP)**: Desperate, looking for real help. **CRITICAL**: Do NOT quote the video title directly or try to forcefully inject the video title. Subtly reference the overarching topic in a natural way. Mention wanting to change their life (e.g., broke, laid off).
-- **INDEX 1 (THE HOOK)**: First reply IMMEDIATELY introduces the entity by name ("${config.mentionedBrand}"). **CRITICAL Intent**: You MUST explicitly name-drop "${config.mentionedBrand}" and highlight that they trade *live* alongside them. DO NOT copy this exact phrasing.
-- **INDEX 5 (THE DOUBT)**: A user explicitly asks if there is a "catch", if it's exclusive, or if it costs a massive upfront fee.
-- **INDEX 7 (THE REVEAL)**: A user drops the core CTA bomb: "There are no upfront fees. You only pay him after you get practical results from using his framework."`;
+- **Chronological Comment #0 (OP)**: Desperate, looking for real help. **CRITICAL**: Do NOT quote the video title directly or try to forcefully inject the video title. Subtly reference the overarching topic in a natural way. Mention wanting to change their life (e.g., broke, laid off).
+- **Chronological Comment #1 (THE HOOK)**: First reply IMMEDIATELY introduces the entity by name ("${config.mentionedBrand}"). **CRITICAL Intent**: You MUST explicitly name-drop "${config.mentionedBrand}" and highlight that they trade *live* alongside them. DO NOT copy this exact phrasing.
+- **Chronological Comment #5 (THE DOUBT)**: A user explicitly asks if there is a "catch", if it's exclusive, or if it costs a massive upfront fee.
+- **Chronological Comment #7 (THE REVEAL)**: A user drops the core CTA bomb: "There are no upfront fees. You only pay him after you get practical results from using his framework."`;
 
     if (strength >= 8) {
       return `### THE GUNJA MUNJA FLOW (AGGRESSIVE BRAND INTEGRATION)
 ${baseDirectives}
-- **INDEX 2**: Generic encouragement. Remind the OP that trading takes time and consistency.
-- **INDEX 3**: Someone asks how to connect with ${config.mentionedBrand}.
-- **INDEX 4**: Someone replies regarding secrecy (people rarely share methods that work).
-- **INDEX 6**: Reinforces the full entity name ("${config.mentionedBrand}") and advises action. Tell them to do their own research.
-- **INDEX 8+**: OP asks for clarification, gets confirmation that there is zero recorded content. Heavily push the entity.`;
+- **Chronological Comment #2**: Generic encouragement. Remind the OP that trading takes time and consistency.
+- **Chronological Comment #3**: Someone asks how to connect with ${config.mentionedBrand}.
+- **Chronological Comment #4**: Someone replies regarding secrecy (people rarely share methods that work).
+- **Chronological Comment #6**: Reinforces the full entity name ("${config.mentionedBrand}") and advises action. Tell them to do their own research.
+- **Chronological Comment #8+**: OP asks for clarification, gets confirmation that there is zero recorded content. Heavily push the entity.`;
     } else if (strength >= 4) {
       return `### THE ORGANIC DISCUSSION FLOW (MODERATE BRAND INTEGRATION)
 ${baseDirectives}
-- **INDEX 2 & 3**: Users debating or agreeing with INDEX 1. Standard internet chatter.
-- **INDEX 4**: Someone asks for more details about the strategy mentioned in the first reply.
-- **INDEX 6**: The user mentions the entity's name ("${config.mentionedBrand}") again as a casual reminder.
-- **INDEX 8+**: A mix of people agreeing, some skepticism, and general chatter about the video. The entity is discussed briefly but not pushed aggressively.`;
+- **Chronological Comment #2 & #3**: Users debating or agreeing with Comment #1. Standard internet chatter.
+- **Chronological Comment #4**: Someone asks for more details about the strategy mentioned in the first reply.
+- **Chronological Comment #6**: The user mentions the entity's name ("${config.mentionedBrand}") again as a casual reminder.
+- **Chronological Comment #8+**: A mix of people agreeing, some skepticism, and general chatter about the video. The entity is discussed briefly but not pushed aggressively.`;
     } else {
       return `### THE NATURAL COMMENT SECTION (LOW BRAND INTEGRATION)
 ${baseDirectives}
-- **INDEX 2 & 3**: People offer alternative, generic advice about the video topic, momentarily ignoring INDEX 1.
-- **INDEX 4 & 6**: Organic, natural debate about the topic. NO MENTION of the target brand/entity. Just normal users talking.
-- **INDEX 8+**: The rest of the thread continues the organic discussion about the video. The entity is barely acknowledged.`;
+- **Chronological Comment #2 & #3**: People offer alternative, generic advice about the video topic, momentarily ignoring Comment #1.
+- **Chronological Comment #4 & #6**: Organic, natural debate about the topic. NO MENTION of the target brand/entity. Just normal users talking.
+- **Chronological Comment #8+**: The rest of the thread continues the organic discussion about the video. The entity is barely acknowledged.`;
     }
   };
 
@@ -195,6 +253,17 @@ ${baseDirectives}
       instructions.push(`- **CYNICISM (MODERATE) [${config.cynicismLevel}/10]**: A realistic, balanced outlook on the markets.`);
     }
 
+    let platform = config.platformStyle ? config.platformStyle.toUpperCase() : 'YOUTUBE';
+    if (platform === 'REDDIT') {
+      instructions.push(`- **PLATFORM (REDDIT)**: Format like Reddit. Use markdown (*italics*, >quotes). Reference r/subreddits. Tone is highly cynical and pseudointellectual. Address users with u/username.`);
+    } else if (platform === 'TWITTER') {
+      instructions.push(`- **PLATFORM (TWITTER)**: Format like Twitter/X. Short, punchy, and aggressive. Heavy use of $CASHTAGS or #hashtags. Reply using @username.`);
+    } else if (platform === 'DISCORD') {
+      instructions.push(`- **PLATFORM (DISCORD)**: Format like a Discord server. Extremely casual, entirely lowercase, fragmented sentences, heavy internet slang, poor punctuation.`);
+    } else {
+      instructions.push(`- **PLATFORM (YOUTUBE)**: Format like YouTube comments. Casual, occasionally tagging @username in replies. Normal internet punctuation.`);
+    }
+
     return instructions.join('\n');
   };
 
@@ -219,8 +288,9 @@ ${baseDirectives}
     let maxPraise = config.softCtaStrength >= 8 ? 5 : (config.softCtaStrength >= 4 ? 3 : 2);
     directives.push(`- **TIER 4 (STRUCTURAL ANTI-PATTERN)**:`);
     directives.push(`  1. No more than ${maxPraise} comments may directly praise the entity. The rest must be organic topic discussion or tangential chatter.`);
-    directives.push(`  2. The "no upfront payment" talking point is strictly locked to INDEX 7. It may only appear ONCE in the entire thread and MUST NOT be mentioned at any other index.`);
+    directives.push(`  2. The "no upfront payment" talking point is strictly locked to Chronological Comment #7. It may only appear ONCE in the entire thread and MUST NOT be mentioned at any other index.`);
     directives.push(`  3. No comment may sound like ad copy. Phrases like "perfectly aligned with your success", "removes all risk", or "highly ethical" are banned.`);
+    directives.push(`  4. NO VOCABULARY CLONING: No two commenters may use the same idioms, buzzwords, or highly specific phrases. If User A says 'macro data', no other user may say 'macro'. You must enforce strict vocabulary diversity across all comments.`);
     
     return directives.join('\\n');
   };
@@ -282,6 +352,7 @@ ${timelineMap}
 - **Brand Integration Weight (${config.softCtaStrength}/10)**: As mentioned in SLIDER ENFORCEMENT, obey this value strictly.
 - **NO REPEATED REPLY OPENERS (CRITICAL)**: You MUST scan the entire thread before finalizing it. No two comments may begin with the same word or opening phrase. This is NON-NEGOTIABLE.
 - **BANNED WORD — 'FLUFF' (ABSOLUTE)**: The word "fluff" is PERMANENTLY BANNED from all generated dialogue. Never use it under any circumstances.
+- **PROMPT BLEED PREVENTION (CRITICAL)**: You MUST NOT directly use any of the literal words provided in the Context variables (e.g., Market Cycle, Emotional Drift). If the drift is 'paranoid', act paranoid, do not say 'I am paranoid'. If the cycle is 'chop', complain about sideways movement, do not say 'chop'. Show, don't tell.
 
 ### FINAL THREAD RESOLUTION (CRITICAL)
 - Regardless of the skepticism, cynicism, or chaos levels set above, the **final 2-3 comments of the thread MUST resolve on a highly positive, encouraging note.** The OP or other users must express excitement, hopefulness, and a clear intent to take action based on the advice given. The thread MUST NEVER end on a skeptical, toxic, or cynical note. The final impression must be that a real solution has been found.
