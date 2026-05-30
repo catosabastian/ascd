@@ -65,15 +65,15 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
       marketCycleMode: 'sideways boredom'
     },
     "GODCODE": {
-      chaosLevel: 6,
+      chaosLevel: 5,
       memeDensity: 4,
-      skepticismLevel: 8,
+      skepticismLevel: 4,
       softCtaStrength: 10,
-      professionalismLevel: 4,
-      cynicismLevel: 7,
+      professionalismLevel: 6,
+      cynicismLevel: 4,
       investmentHorizon: 5,
-      debateIntensity: 7,
-      emotionalDrift: 'cynical',
+      debateIntensity: 3,
+      emotionalDrift: 'intrigued',
       marketCycleMode: 'chop'
     }
   };
