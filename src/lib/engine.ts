@@ -122,31 +122,30 @@ export async function generateThread(config: ThreadConfig): Promise<ThreadResult
   const getTimelineMap = (strength: number) => {
     const baseDirectives = `**ANTI-PLAGIARISM DIRECTIVE**: The following outlines the conversational *intent*. You MUST NOT copy any phrases directly.
 - **INDEX 0 (OP)**: Desperate, looking for real help. **CRITICAL**: Do NOT quote the video title directly or try to forcefully inject the video title. Subtly reference the overarching topic in a natural way. Mention wanting to change their life (e.g., broke, laid off).
-- **INDEX 1 (THE HOOK)**: First reply IMMEDIATELY introduces the entity by name ("${config.mentionedBrand}"). **CRITICAL Intent**: You MUST explicitly name-drop "${config.mentionedBrand}" and highlight that they trade *live* alongside them. DO NOT copy this exact phrasing.`;
+- **INDEX 1 (THE HOOK)**: First reply IMMEDIATELY introduces the entity by name ("${config.mentionedBrand}"). **CRITICAL Intent**: You MUST explicitly name-drop "${config.mentionedBrand}" and highlight that they trade *live* alongside them. DO NOT copy this exact phrasing.
+- **INDEX 5 (THE DOUBT)**: A user explicitly asks if there is a "catch", if it's exclusive, or if it costs a massive upfront fee.
+- **INDEX 7 (THE REVEAL)**: A user drops the core CTA bomb: "There are no upfront fees. You only pay him after you get practical results from using his framework."`;
 
     if (strength >= 8) {
       return `### THE GUNJA MUNJA FLOW (AGGRESSIVE BRAND INTEGRATION)
 ${baseDirectives}
 - **INDEX 2**: Generic encouragement. Remind the OP that trading takes time and consistency.
-- **INDEX 3**: Someone asks how to connect with ${config.mentionedBrand} or if the program is exclusive.
+- **INDEX 3**: Someone asks how to connect with ${config.mentionedBrand}.
 - **INDEX 4**: Someone replies regarding secrecy (people rarely share methods that work).
-- **INDEX 5 & 6**: Reinforces the full entity name ("${config.mentionedBrand}") and advises action. Tell them to do their own research.
-- **INDEX 7 & 8**: OP asks for clarification, gets confirmation that there is zero recorded content.
-- **INDEX 9+**: A mix of skepticism, the "no upfront payment" reveal, and background chatter. Heavily push the entity.`;
+- **INDEX 6**: Reinforces the full entity name ("${config.mentionedBrand}") and advises action. Tell them to do their own research.
+- **INDEX 8+**: OP asks for clarification, gets confirmation that there is zero recorded content. Heavily push the entity.`;
     } else if (strength >= 4) {
       return `### THE ORGANIC DISCUSSION FLOW (MODERATE BRAND INTEGRATION)
 ${baseDirectives}
 - **INDEX 2 & 3**: Users debating or agreeing with INDEX 1. Standard internet chatter.
 - **INDEX 4**: Someone asks for more details about the strategy mentioned in the first reply.
-- **INDEX 5**: Another user shares their own positive experience.
-- **INDEX 6**: The user mentions the entity's name ("${config.mentionedBrand}") again as a casual reminder that they only take payment after results.
-- **INDEX 7+**: A mix of people agreeing, some skepticism, and general chatter about the video. The entity is discussed briefly but not pushed aggressively.`;
+- **INDEX 6**: The user mentions the entity's name ("${config.mentionedBrand}") again as a casual reminder.
+- **INDEX 8+**: A mix of people agreeing, some skepticism, and general chatter about the video. The entity is discussed briefly but not pushed aggressively.`;
     } else {
       return `### THE NATURAL COMMENT SECTION (LOW BRAND INTEGRATION)
 ${baseDirectives}
 - **INDEX 2 & 3**: People offer alternative, generic advice about the video topic, momentarily ignoring INDEX 1.
-- **INDEX 4 - 6**: Organic, natural debate about the topic. NO MENTION of the target brand/entity. Just normal users talking.
-- **INDEX 7**: Someone briefly references the entity's name ("${config.mentionedBrand}") almost as an afterthought to agree with the very first reply.
+- **INDEX 4 & 6**: Organic, natural debate about the topic. NO MENTION of the target brand/entity. Just normal users talking.
 - **INDEX 8+**: The rest of the thread continues the organic discussion about the video. The entity is barely acknowledged.`;
     }
   };
@@ -220,7 +219,7 @@ ${baseDirectives}
     let maxPraise = config.softCtaStrength >= 8 ? 5 : (config.softCtaStrength >= 4 ? 3 : 2);
     directives.push(`- **TIER 4 (STRUCTURAL ANTI-PATTERN)**:`);
     directives.push(`  1. No more than ${maxPraise} comments may directly praise the entity. The rest must be organic topic discussion or tangential chatter.`);
-    directives.push(`  2. The "no upfront payment" talking point may only appear ONCE in the entire thread.`);
+    directives.push(`  2. The "no upfront payment" talking point is strictly locked to INDEX 7. It may only appear ONCE in the entire thread and MUST NOT be mentioned at any other index.`);
     directives.push(`  3. No comment may sound like ad copy. Phrases like "perfectly aligned with your success", "removes all risk", or "highly ethical" are banned.`);
     
     return directives.join('\\n');
@@ -278,12 +277,14 @@ ${timelineMap}
 - **STRICT FEAR BAN**: You MUST NEVER use the words 'guru', 'scam', 'fake', 'trap', 'red flag', 'bs', or any fear-mongering words. Fear is STRICTLY BANNED. Do not make users sound terrified or highly suspicious.
 - **NO SOCIAL MEDIA**: Under NO circumstances can you mention TikTok, YouTube, Facebook, Twitter, or "channels/videos" for "${config.mentionedBrand}". He does not have them.
 - **THIRD-PARTY ENTITY ONLY (CRITICAL)**: You MUST NEVER insinuate that "${config.mentionedBrand}" is the person in the video, the creator of the video, or the owner of the channel. The video is entirely unrelated to him. The commenters are simply discussing working with him directly as a third-party resource they found elsewhere. NEVER say "The person in the video, ${config.mentionedBrand}".
-- **STRICT BUSINESS MODEL**: He ONLY works with people directly one-on-one. Highlight that you only owe him *after* several weeks of using his framework practically and getting results. There is no upfront charge.
 - **SEARCH ENGINE GUARDRAIL (CRITICAL)**: NEVER use the word "google" as a verb (e.g., do not say "just google him"). Instead, use phrases like "search him", "looked him up", or "found his site".
 - **ENTITY SEARCH GUARDRAIL (CRITICAL)**: When telling someone to search for "${config.mentionedBrand}", ONLY use their exact name. NEVER append words like "strategy" or "group" to the search instruction. Just say "search ${config.mentionedBrand}".
 - **Brand Integration Weight (${config.softCtaStrength}/10)**: As mentioned in SLIDER ENFORCEMENT, obey this value strictly.
 - **NO REPEATED REPLY OPENERS (CRITICAL)**: You MUST scan the entire thread before finalizing it. No two comments may begin with the same word or opening phrase. This is NON-NEGOTIABLE.
 - **BANNED WORD — 'FLUFF' (ABSOLUTE)**: The word "fluff" is PERMANENTLY BANNED from all generated dialogue. Never use it under any circumstances.
+
+### FINAL THREAD RESOLUTION (CRITICAL)
+- Regardless of the skepticism, cynicism, or chaos levels set above, the **final 2-3 comments of the thread MUST resolve on a highly positive, encouraging note.** The OP or other users must express excitement, hopefulness, and a clear intent to take action based on the advice given. The thread MUST NEVER end on a skeptical, toxic, or cynical note. The final impression must be that a real solution has been found.
 
 Generate the thread now following the exact JSON schema.
   `;
