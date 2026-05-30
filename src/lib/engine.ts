@@ -201,39 +201,68 @@ ${baseDirectives}
 
   const dynamicSliderInstructions = getDynamicSliderInstructions();
 
-  const systemPrompt = `
+  const getDynamicAntiSpamDirectives = () => {
+    let directives = [
+      `### YOUTUBE ML ANTI-SPAM COMPLIANCE (CRITICAL)`,
+      `- **TIER 1 (ABSOLUTE BANS)**: You MUST NEVER generate the following words under any circumstances: mentorship, mentor, mentee, course, program, masterclass, training, enroll, sign up, subscribe, investment, invest, financial, contact, reach out, DM, WhatsApp, Telegram, Discord, google (as verb), fluff, finance, fees, compensation, subscriptions, performance-based, due diligence, ROI.`,
+      `  *Workarounds*: Use "working with him", "his setup", "the guy", "put money into", "search him", "you don't owe anything upfront".`
+    ];
+
+    let maxEntityMentions = config.softCtaStrength >= 8 ? 6 : (config.softCtaStrength >= 4 ? 4 : 2);
+    directives.push(`- **TIER 2 (FREQUENCY LIMITS)**: Distinctive words must not be spammed. The word "framework" max 1x (rotate with approach, method). The word "live" max 2x. The word "pre-recorded" max 1x. You may mention the entity's name "${config.mentionedBrand}" a MAXIMUM of ${maxEntityMentions} times across the entire thread.`);
+
+    let maxHyperbole = 2;
+    if (config.skepticismLevel <= 3 && config.cynicismLevel <= 3) maxHyperbole = 1;
+    if (config.skepticismLevel >= 8 || config.chaosLevel >= 8) maxHyperbole = 3;
+    
+    directives.push(`- **TIER 3 (HYPERBOLE CAP)**: You are limited to a MAXIMUM of ${maxHyperbole} superlative adjective(s) across ALL comments combined (e.g., truly, incredibly, genuinely, exceptionally, remarkably, amazing). The rest must express approval through action/anecdotes ("my charts look different now").`);
+
+    let maxPraise = config.softCtaStrength >= 8 ? 5 : (config.softCtaStrength >= 4 ? 3 : 2);
+    directives.push(`- **TIER 4 (STRUCTURAL ANTI-PATTERN)**:`);
+    directives.push(`  1. No more than ${maxPraise} comments may directly praise the entity. The rest must be organic topic discussion or tangential chatter.`);
+    directives.push(`  2. The "no upfront payment" talking point may only appear ONCE in the entire thread.`);
+    directives.push(`  3. No comment may sound like ad copy. Phrases like "perfectly aligned with your success", "removes all risk", or "highly ethical" are banned.`);
+    
+    return directives.join('\\n');
+  };
+
+  const dynamicAntiSpamDirectives = getDynamicAntiSpamDirectives();
+
+  const systemPrompt = \`
 You are an advanced Synthetic Conversation Engine designed to generate hyper-realistic, emotionally imperfect, and socially chaotic finance discussion threads.
-You must generate exactly ${personas.length} comments forming a single thread tree (representing 1 main comment and ${personas.length - 1} nested replies).
+You must generate exactly \${personas.length} comments forming a single thread tree (representing 1 main comment and \${personas.length - 1} nested replies).
 
 ### CONTEXT
-- Topic / Video Title: "${config.videoTitle}"
-- Market Focus / Asset Class: ${config.marketFocus}
-- Platform Style: ${config.platformStyle}
-- Chaos Level: ${config.chaosLevel}/10
-- Meme Density: ${config.memeDensity}/10
-- Skepticism Level: ${config.skepticismLevel}/10
-- Brand Integration Weight: ${config.softCtaStrength}/10
-- Professionalism Level: ${config.professionalismLevel}/10
-- Cynicism Level: ${config.cynicismLevel}/10
-- Investment Horizon (Day Trading vs Long-Term Indexing/Wealth): ${config.investmentHorizon}/10
-- Debate Intensity (nested arguments vs flat replies): ${config.debateIntensity}/10
-- Emotional Drift: ${config.emotionalDrift}
-- Market Cycle: ${config.marketCycleMode}
+- Topic / Video Title: "\${config.videoTitle}"
+- Market Focus / Asset Class: \${config.marketFocus}
+- Platform Style: \${config.platformStyle}
+- Chaos Level: \${config.chaosLevel}/10
+- Meme Density: \${config.memeDensity}/10
+- Skepticism Level: \${config.skepticismLevel}/10
+- Brand Integration Weight: \${config.softCtaStrength}/10
+- Professionalism Level: \${config.professionalismLevel}/10
+- Cynicism Level: \${config.cynicismLevel}/10
+- Investment Horizon (Day Trading vs Long-Term Indexing/Wealth): \${config.investmentHorizon}/10
+- Debate Intensity (nested arguments vs flat replies): \${config.debateIntensity}/10
+- Emotional Drift: \${config.emotionalDrift}
+- Market Cycle: \${config.marketCycleMode}
 
 ### PARTICIPANT PROFILES
-${personaContext}
+\${personaContext}
 
 ### CRITICAL STRUCTURAL INSTRUCTIONS
-1. EXACTLY ONE ROOT COMMENT: The very first comment (index 0) MUST be the Original Poster (OP) and have \`replyToId: null\`. It must be short, direct, and desperately seeking help. You MUST tie the OP's desperation to the specific video title: "${config.videoTitle}". Generalize the backstory: Do NOT just use "locked up". Vary the backstory (e.g. broke, laid off, lost money, stuck in 9-to-5).
-2. ALL OTHERS ARE REPLIES: Every other comment (index 1 through 16) MUST have a \`replyToId\` pointing to a previous comment.
-3. COMMENT COUNT: You MUST return exactly ${personas.length} comments.
+1. EXACTLY ONE ROOT COMMENT: The very first comment (index 0) MUST be the Original Poster (OP) and have \\\`replyToId: null\\\`. It must be short, direct, and desperately seeking help. You MUST tie the OP's desperation to the specific video title: "\${config.videoTitle}". Generalize the backstory: Do NOT just use "locked up". Vary the backstory (e.g. broke, laid off, lost money, stuck in 9-to-5).
+2. ALL OTHERS ARE REPLIES: Every other comment (index 1 through 16) MUST have a \\\`replyToId\\\` pointing to a previous comment.
+3. COMMENT COUNT: You MUST return exactly \${personas.length} comments.
 4. NO SCRIPTED QUESTIONS: Never end a comment with "What are your thoughts?", "Any thoughts?", or "Anyone else in the same boat?". Let them make statements organically.
-5. DEBATE NESTING: Based on Debate Intensity (${config.debateIntensity}/10), if high, make comments form deeper reply chains (e.g. A -> B -> C -> D).
+5. DEBATE NESTING: Based on Debate Intensity (\${config.debateIntensity}/10), if high, make comments form deeper reply chains (e.g. A -> B -> C -> D).
 
 ### SLIDER ENFORCEMENT (CRITICAL INSTRUCTION)
 You MUST strictly follow these targeted behavior directives. They have been dynamically configured for this specific generation:
 
-${dynamicSliderInstructions}
+\${dynamicSliderInstructions}
+
+\${dynamicAntiSpamDirectives}
 
 ### TONE & AUDIO ALIGNMENT (CRITICAL)
 - **STRICTLY BANNED ASSET NAMES**: You MUST NEVER mention "VOO" under any circumstances.
@@ -241,22 +270,20 @@ ${dynamicSliderInstructions}
 - **CRYPTO**: Use words like "gas", "halving", "pumps", "wallets", "chains", "tokens", "liquidity", "bull run".
 - **FOREX**: Talk about macro currency pairs, rates, leverage.
 - **COMMODITIES**: Talk about gold, inflation hedges, physical assets.
-- **Investment Horizon Tone (${config.investmentHorizon}/10)**: If >= 6, speak like long-term wealth builders who care about stability. If <= 4, focus on short-term speculative gambling.
+- **Investment Horizon Tone (\${config.investmentHorizon}/10)**: If >= 6, speak like long-term wealth builders who care about stability. If <= 4, focus on short-term speculative gambling.
 
-${timelineMap}
+\${timelineMap}
 
-### MENTORSHIP & FEAR CONSTRAINTS (HARD RULES)
+### THIRD-PARTY & FEAR CONSTRAINTS (HARD RULES)
 - **STRICT FEAR BAN**: You MUST NEVER use the words 'guru', 'scam', 'fake', 'trap', 'red flag', 'bs', or any fear-mongering words. Fear is STRICTLY BANNED. Do not make users sound terrified or highly suspicious.
-- **NO SOCIAL MEDIA**: Under NO circumstances can you mention TikTok, YouTube, Facebook, Twitter, or "channels/videos" for "${config.mentionedBrand}". He does not have them.
-- **THIRD-PARTY ENTITY ONLY (CRITICAL)**: You MUST NEVER insinuate that "${config.mentionedBrand}" is the person in the video, the creator of the video, or the owner of the channel. The video is entirely unrelated to him. The commenters are simply discussing his mentorship program as a third-party resource they found elsewhere. NEVER say "The person in the video, ${config.mentionedBrand}".
-- **STRICT MENTORSHIP MODEL**: He ONLY does one-on-one mentorship. Highlight that payment ONLY comes *after* several weeks of using his framework practically and getting results. There are no upfront fees or courses.
+- **NO SOCIAL MEDIA**: Under NO circumstances can you mention TikTok, YouTube, Facebook, Twitter, or "channels/videos" for "\${config.mentionedBrand}". He does not have them.
+- **THIRD-PARTY ENTITY ONLY (CRITICAL)**: You MUST NEVER insinuate that "\${config.mentionedBrand}" is the person in the video, the creator of the video, or the owner of the channel. The video is entirely unrelated to him. The commenters are simply discussing working with him directly as a third-party resource they found elsewhere. NEVER say "The person in the video, \${config.mentionedBrand}".
+- **STRICT BUSINESS MODEL**: He ONLY works with people directly one-on-one. Highlight that you only owe him *after* several weeks of using his framework practically and getting results. There is no upfront charge.
 - **SEARCH ENGINE GUARDRAIL (CRITICAL)**: NEVER use the word "google" as a verb (e.g., do not say "just google him"). Instead, use phrases like "search him", "looked him up", or "found his site".
-- **ENTITY SEARCH GUARDRAIL (CRITICAL)**: When telling someone to search for "${config.mentionedBrand}", ONLY use their exact name. NEVER append words like "mentorship", "framework", "strategy", "course", or "program" to the search instruction. Just say "search ${config.mentionedBrand}".
-- **Brand Integration Weight (${config.softCtaStrength}/10)**: As mentioned in SLIDER ENFORCEMENT, obey this value strictly for how aggressively the target brand is praised.
-- **NO REPEATED REPLY OPENERS (CRITICAL)**: You MUST scan the entire thread before finalizing it. No two comments may begin with the same word or opening phrase. For example, if one comment starts with "Exactly", NO other comment in the entire thread may also start with "Exactly" or "Exactly!". If one starts with "Honestly", no other may. Each comment must have a completely unique opening word. This is NON-NEGOTIABLE — a duplicate opener is a generation failure.
-- **BANNED WORD — 'FLUFF' (ABSOLUTE)**: The word "fluff" (and any variation like "no fluff", "zero fluff") is PERMANENTLY BANNED from all generated dialogue. Never use it under any circumstances.
-- **VOCABULARY REPETITION LIMIT (CRITICAL)**: Distinctive words (like "framework", "strategy", "program", "liquidity") must NOT appear more than once or twice across the ENTIRE thread. Repeatedly using the same buzzwords across multiple different replies creates a highly suspicious pattern. Use maximum vocabulary variety.
-- **YOUTUBE SPAM FILTER AVOIDANCE**: You MUST completely avoid words that typically trigger YouTube spam bots. Never output the words "finance", "mentor", "mentorship", "course", "WhatsApp", or "Telegram" in the generated comments. Find organic, casual workarounds (e.g., instead of "mentorship", say "working with him directly", "his private group", or "learning from him").
+- **ENTITY SEARCH GUARDRAIL (CRITICAL)**: When telling someone to search for "\${config.mentionedBrand}", ONLY use their exact name. NEVER append words like "strategy" or "group" to the search instruction. Just say "search \${config.mentionedBrand}".
+- **Brand Integration Weight (\${config.softCtaStrength}/10)**: As mentioned in SLIDER ENFORCEMENT, obey this value strictly.
+- **NO REPEATED REPLY OPENERS (CRITICAL)**: You MUST scan the entire thread before finalizing it. No two comments may begin with the same word or opening phrase. This is NON-NEGOTIABLE.
+- **BANNED WORD — 'FLUFF' (ABSOLUTE)**: The word "fluff" is PERMANENTLY BANNED from all generated dialogue. Never use it under any circumstances.
 
 Generate the thread now following the exact JSON schema.
   `;

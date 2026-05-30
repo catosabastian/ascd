@@ -63,6 +63,18 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
       debateIntensity: 2,
       emotionalDrift: 'mixed',
       marketCycleMode: 'sideways boredom'
+    },
+    "GODCODE": {
+      chaosLevel: 6,
+      memeDensity: 4,
+      skepticismLevel: 8,
+      softCtaStrength: 10,
+      professionalismLevel: 4,
+      cynicismLevel: 7,
+      investmentHorizon: 5,
+      debateIntensity: 7,
+      emotionalDrift: 'cynical',
+      marketCycleMode: 'chop'
     }
   };
 
@@ -105,8 +117,8 @@ export default function ConfigPanel({ onGenerate, isGenerating }: ConfigPanelPro
 
   const deletePreset = (name: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (name === "GODMODE") {
-      showToast('error', 'SYSTEM LOCKED', 'Cannot delete default GODMODE preset.');
+    if (name === "GODMODE" || name === "GODCODE") {
+      showToast('error', 'SYSTEM LOCKED', `Cannot delete default ${name} preset.`);
       return;
     }
     const newPresets = { ...presets };
